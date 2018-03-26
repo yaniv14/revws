@@ -40,7 +40,7 @@ class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
   }
 
   private function renderContent(Visitor $visitor) {
-    $this->addJS($this->module->getPath('views/js/front_bootstrap.js?CACHE_CONTROL'));
+    $this->registerJavascript('revws-front', $this->module->getPath('views/js/front_bootstrap.js'), ['position' => 'bottom', 'priority' => 150]);
     $frontApp = new FrontApp($this->module);
     $params = $this->getParams();
     $reviewProduct = (isset($params['review-product'])) ? (int)$params['review-product'] : null;
@@ -57,7 +57,7 @@ class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
     $this->context->smarty->assign('reviewsData', $reviewsData);
     $this->context->smarty->assign('microdata', $this->module->getSettings()->emitRichSnippets());
     Media::addJsDef([ 'revwsData' => $reviewsData ]);
-    $this->setTemplate('my-reviews.tpl');
+    $this->setTemplate('module:revws/views/templates/front/my-reviews.tpl');
   }
 
   private function isLoggedIn() {

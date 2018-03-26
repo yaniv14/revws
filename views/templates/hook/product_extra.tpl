@@ -19,7 +19,7 @@
   <b>{l s='Rating' mod='revws'}:</b>
   {if $reviewCount > 0}
     <a class="revws-product-extra-link" href="#idTabRevws">
-      {include file='./grading.tpl' grade=$grade shape=$shape type='product'}
+      {include file='module:revws/views/templates/hook/grading.tpl' grade=$grade shape=$shape type='product'}
       <div class="revws-count-text">
         {l s='(read %1$d reviews)' sprintf=[$reviewCount] mod='revws'}
       </div>

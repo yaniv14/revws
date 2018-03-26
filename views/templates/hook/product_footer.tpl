@@ -17,5 +17,5 @@
 *}
 <section id="revws-section" class="page-product-box">
   <h3 class="page-product-heading">{l s='Reviews' mod='revws'}</h3>
-  {include file='./product_tab_content.tpl' reviewsData=$reviewsData}
+  {include file='module:revws/views/templates/hook/product_tab_content.tpl' reviewsData=$reviewsData}
 </section>

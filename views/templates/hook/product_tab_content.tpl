@@ -18,7 +18,7 @@
 <div id="idTabRevws">
   <div id="revws-tab-content">
     <div id="revws-app">
-      {include file="./private_product_list.tpl" reviewsData=$reviewsData productId=$reviewsData.entityId}
+      {include file='module:revws/views/templates/hook/private_product_list.tpl' reviewsData=$reviewsData productId=$reviewsData.entityId}
     </div>
   </div>
 </div>

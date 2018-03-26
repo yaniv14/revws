@@ -32,7 +32,7 @@
         <div class="revws-verified-buyer-badge">{l s="Verified purchase" mod='revws'}</div>
       {/if}
       {if count($review.grades) > 0}
-      {include file='./grading.tpl' grade=$review.grade shape=$reviewsData.theme.shape type='product'}
+      {include file='module:revws/views/templates/hook/grading.tpl' grade=$review.grade shape=$reviewsData.theme.shape type='product'}
       {if $microdata}
       <div class="revws-hidden" itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
         <meta itemprop="worstRating" content="1">
@@ -54,7 +54,7 @@
             {foreach from=$review.grades item=critValue key=critKey}
             <div class='revws-review-criterion'>
               <span class='revws-criterion-label'>{$reviewsData.criteria[$critKey].label}</span>
-              {include file='./grading.tpl' grade=$critValue shape=$reviewsData.theme.shape type='criterion'}
+              {include file='module:revws/views/templates/hook/grading.tpl' grade=$critValue shape=$reviewsData.theme.shape type='criterion'}
             </div>
             {/foreach}
           </div>
@@ -75,7 +75,7 @@
               <tr>
                 <td class="revws-criterion-label">{$reviewsData.criteria[$critKey].label}</td>
                 <td class="revws-criterion-value">
-                  {include file='./grading.tpl' grade=$critValue shape=$reviewsData.theme.shape type='criterion'}
+                  {include file='module:revws/views/templates/hook/grading.tpl' grade=$critValue shape=$reviewsData.theme.shape type='criterion'}
                 </td>
               </tr>
               {/foreach}

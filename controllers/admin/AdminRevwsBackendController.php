@@ -28,7 +28,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
     parent::__construct();
     $this->display = 'view';
     $this->bootstrap = false;
-    $this->module->includeCommonStyles($this);
+    $this->module->includeCommonStyles($this, true);
     $this->addCSS($this->getPath('views/css/back.css'));
     $this->addJs($this->module->getSettings()->getBackendAppUrl($this->module));
   }

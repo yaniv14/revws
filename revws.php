@@ -51,7 +51,7 @@ class Revws extends Module {
     $this->displayName = $this->l('Revws - Product Reviews');
     $this->description = $this->l('Product Reviews module');
     $this->confirmUninstall = $this->l('Are you sure you want to uninstall the module? All its data will be lost!');
-    $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.999');
+    $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
   }
 
   public function install($createTables=true) {
@@ -260,7 +260,6 @@ class Revws extends Module {
   public function hookDisplayProductTabContent() {
     $set = $this->getSettings();
     if ($this->getSettings()->getPlacement() === 'tab') {
-      $this->context->controller->addJS($this->getPath('views/js/front_bootstrap.js?CACHE_CONTROL'));
       $reviewsData = $this->assignReviewsData((int)(Tools::getValue('id_product')));
       $emptyReviews = $reviewsData['reviews']['total'] == 0;
       $canCreate = $reviewsData['canCreate'];
@@ -274,7 +273,6 @@ class Revws extends Module {
   public function hookDisplayFooterProduct() {
     $set = $this->getSettings();
     if ($set->getPlacement() === 'block') {
-      $this->context->controller->addJS($this->getPath('views/js/front_bootstrap.js?CACHE_CONTROL'));
       $reviewsData = $this->assignReviewsData((int)(Tools::getValue('id_product')));
       $emptyReviews = $reviewsData['reviews']['total'] == 0;
       $canCreate = $reviewsData['canCreate'];
@@ -286,7 +284,13 @@ class Revws extends Module {
   }
 
   public function hookHeader() {
-    $this->includeCommonStyles($this->context->controller);
+    $controller = $this->context->controller;
+    $this->includeCommonStyles($controller);
+    $productId = (int)(Tools::getValue('id_product'));
+    if ($productId) {
+      $reviewsData = $this->assignReviewsData($productId);
+      $this->context->controller->registerJavascript('revws-front', $this->getPath('views/js/front_bootstrap.js'), ['position' => 'bottom', 'priority' => 150]);
+    }
   }
 
   public function hookDisplayRightColumnProduct($params) {
@@ -420,9 +424,12 @@ class Revws extends Module {
     return $translations->getBackTranslations();
   }
 
-  public function includeCommonStyles($controller) {
-    $controller->addCSS('https://fonts.googleapis.com/css?family=Roboto:300,400,500', 'all');
-    $controller->addCSS($this->getCSSFile(), 'all');
+  public function includeCommonStyles($controller, $back=false) {
+    if ($back) {
+      $controller->addCSS($this->getCSSFile(), 'all');
+    } else {
+      $controller->registerStylesheet('revws-css', $this->getCSSFile(), ['media' => 'all', 'priority' => 20]);
+    }
   }
 
   private function getProductReviewsLink($product) {
@@ -452,7 +459,7 @@ class Revws extends Module {
     if (! file_exists($filename)) {
       $this->generateCSS($set, $filename);
     }
-    return $filename;
+    return str_replace(_PS_ROOT_DIR_, '', $filename);
   }
 
   private function getCSSFilename($set) {

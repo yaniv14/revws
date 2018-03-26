@@ -54,7 +54,7 @@
         <h2>
           <a href="{$product.url}">{$product.name|escape:'html':'UTF-8'}</a>
         </h2>
-        {include file="../hook/private_review_list_item.tpl" review=$review}
+        {include file="module:revws/views/templates/hook/private_review_list_item.tpl" review=$review}
       </div>
     </div>
   {/foreach}

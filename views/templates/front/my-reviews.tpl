@@ -1,10 +1,9 @@
+{extends file='page.tpl'}
+{block name='page_content'}
 {capture name=path}
   <a href="{$link->getPageLink('my-account', true)|escape:'html':'UTF-8'}">
     {l s='My account' mod='revws'}
   </a>
-  <span class="navigation-pipe">
-    {$navigationPipe}
-  </span>
   <span class="navigation_page">
     {l s='My reviews' mod='revws'}
   </span>
@@ -13,7 +12,7 @@
 <div id="myreviews">
   <div id="revws-tab-content">
     <div id="revws-app">
-      {include file="./private_my_review_list.tpl" reviewsData=$reviewsData}
+      {include file="module:revws/views/templates/front/private_my_review_list.tpl" reviewsData=$reviewsData}
     </div>
   </div>
 </div>
@@ -25,3 +24,4 @@
     </li>
   </ul>
 </nav>
+{/block}

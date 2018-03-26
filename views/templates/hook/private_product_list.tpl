@@ -24,8 +24,8 @@
 *}
 {strip}
 {if $reviewsData.reviews.total > 0}
-  {include file="./private_review_list.tpl" reviewsData=$reviewsData}
-  {include file="./private_review_list_paging.tpl" reviewsData=$reviewsData}
+  {include file="module:revws/views/templates/hook/private_review_list.tpl" reviewsData=$reviewsData}
+  {include file="module:revws/views/templates/hook/private_review_list_paging.tpl" reviewsData=$reviewsData}
   {if $reviewsData.canCreate}
     <div class="form-group">
       <a class="btn btn-primary" data-revws-create-trigger="{$productId}">

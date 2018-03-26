@@ -25,7 +25,7 @@
 {strip}
 <div class="revws-review-list">
 {foreach from=$reviewsData.reviews.reviews item=review}
-  {include file="./private_review_list_item.tpl" review=$review}
+  {include file='module:revws/views/templates/hook/private_review_list_item.tpl' review=$review}
 {/foreach}
 </div>
 {/strip}

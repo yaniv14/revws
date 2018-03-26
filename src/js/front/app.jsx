@@ -21,7 +21,7 @@ class FrontApp extends React.PureComponent<Props> {
   render() {
     const { settings, type, id } = this.props;
     return (
-      <AppTheme htmlFontSize={10}>
+      <AppTheme htmlFontSize={14}>
         { type === 'product' ? (
           <ProductReviewList settings={settings} productId={id} />
         ) : (

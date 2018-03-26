@@ -17,7 +17,7 @@
 *}
 <div class="revws-product-list{if $reviewCount == 0} revws-product-list-empty{/if}">
   <a href="{$reviewsUrl}">
-    {include file='./grading.tpl' grade=$grade shape=$shape type='list'}
+    {include file='module:revws/views/templates/hook/grading.tpl' grade=$grade shape=$shape type='list'}
     <div class="revws-count-text">
       {if $reviewCount == 1}
         {l s='one review' mod='revws'}

@@ -75,7 +75,7 @@ class Settings {
         ],
         'myReviews' => [
           'show' => true,
-          'iconClass' => 'icon icon-star',
+          'iconClass' => '',
           'reviewsPerPage' => 5,
           'maxRequests' => 3
         ]
