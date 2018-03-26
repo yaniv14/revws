@@ -84,8 +84,7 @@ class Revws extends Module {
   public function registerHooks() {
     return $this->setupHooks([
       'header',
-      'displayProductTab',
-      'displayProductTabContent',
+      'displayProductExtraContent',
       'displayRightColumnProduct',
       'displayProductListReviews',
       'displayProductButtons',
@@ -251,22 +250,22 @@ class Revws extends Module {
     return \Revws\Shapes::getShape($this->getSettings()->getShape());
   }
 
-  public function hookDisplayProductTab() {
-    if ($this->getSettings()->getPlacement() === 'tab') {
-      return $this->display(__FILE__, 'product_tab_header.tpl');
-    }
-  }
-
-  public function hookDisplayProductTabContent() {
+  public function hookdisplayProductExtraContent($params) {
     $set = $this->getSettings();
-    if ($this->getSettings()->getPlacement() === 'tab') {
+    if ($set->getPlacement() === 'tab' && (Tools::getValue('ajax', 'false') == 'false')) {
       $reviewsData = $this->assignReviewsData((int)(Tools::getValue('id_product')));
       $emptyReviews = $reviewsData['reviews']['total'] == 0;
       $canCreate = $reviewsData['canCreate'];
       if ($emptyReviews && !$canCreate && $this->getVisitor()->isGuest() && $set->hideEmptyReviews()) {
-        return;
+        return [];
       }
-      return $this->display(__FILE__, 'product_tab_content.tpl');
+      $content = $this->display(__FILE__, 'product_tab_content.tpl');
+      $tab = new PrestaShop\PrestaShop\Core\Product\ProductExtraContent();
+      $tab->setTitle($this->l('Reviews'));
+      $tab->setContent($content);
+      return [ $tab ];
+    } else {
+      return [];
     }
   }
 

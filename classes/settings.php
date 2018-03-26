@@ -60,10 +60,10 @@ class Settings {
       ],
       'display' => [
         'product' => [
-          'placement' => 'block',
+          'placement' => 'tab',
           'reviewsPerPage' => 5,
           'orderBy' => 'date',
-          'averagePlacement' => 'rightColumn',
+          'averagePlacement' => 'buttons',
           'hideEmptyReviews' => false,
           'showSignInButton' => true,
         ],
@@ -97,7 +97,7 @@ class Settings {
         'allowEdit' => true,
         'allowVoting' => true,
         'allowReporting' => true,
-        'displayCriteria' => 'side'
+        'displayCriteria' => 'none'
       ],
       'notifications' => [
         'admin' => [
