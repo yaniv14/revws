@@ -105,7 +105,7 @@ gulp.task('create-zip', function(done) {
   var fileVersion = version.replace(/\./g, '_');
   return gulp
     .src('./build/staging/**/*')
-    .pipe(zip('revws-'+fileVersion+'.zip'))
+    .pipe(zip('revws-ps17-'+fileVersion+'.zip'))
     .pipe(gulp.dest('./build'));
 });
 
