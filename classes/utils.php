@@ -52,7 +52,7 @@ class Utils {
   }
 
   public static function getMailsDirectory() {
-    return REVWS_MODULE_DIR . DIRECTORY_SEPARATOR . 'mails' . DIRECTORY_SEPARATOR;
+    return _PS_MODULE_DIR_ . 'revws' . DIRECTORY_SEPARATOR . 'mails' . DIRECTORY_SEPARATOR;
   }
 
   public static function calculateAverage($grades) {
