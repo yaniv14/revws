@@ -213,7 +213,7 @@ gulp.task('upload', function(done) {
   const fileVersion = version.replace(/\./g, '_');
   const s3 = createS3(config);
   gulp
-    .src([`./build/revws-${fileVersion}.zip`])
+    .src([`./build/revws-${fileVersion}-ps17.zip`])
     .pipe(s3({
       Bucket: 'download.getdatakick.com',
       ACL: 'public-read'
