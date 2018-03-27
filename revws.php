@@ -482,7 +482,7 @@ class Revws extends Module {
         }
       }
       $id = md5($data);
-      $filename = _PS_THEME_DIR_ . "cache/" . $this->name . "-$id.css";
+      $filename = _PS_THEME_DIR_ . "assets/cache/" . $this->name . "-$id.css";
     }
     return $filename;
   }
