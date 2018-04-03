@@ -43,7 +43,7 @@ class Revws extends Module {
   public function __construct() {
     $this->name = 'revws';
     $this->tab = 'administration';
-    $this->version = '1.0.9';
+    $this->version = '1.0.10';
     $this->author = 'DataKick';
     $this->need_instance = 0;
     $this->bootstrap = true;
@@ -213,7 +213,9 @@ class Revws extends Module {
       $this->settings = new \Revws\Settings();
       $version = $this->settings->getVersion();
       if ($version != $this->version) {
-        $this->migrate($version);
+        if (version_compare($version, $this->version, '<')) {
+          $this->migrate($version);
+        }
         $this->registerHooks();
         $this->settings->setVersion($this->version);
       }
@@ -509,6 +511,10 @@ class Revws extends Module {
     $extend = $this->getTemplatePath('css-extend.tpl');
     if ($extend) {
       $css .= "\n" . $this->display(__FILE__, 'css-extend.tpl');
+    }
+    $dir = dirname($filename);
+    if (! is_dir($dir)) {
+      @mkdir($dir);
     }
     @file_put_contents($filename, $css);
   }
