@@ -19,6 +19,7 @@
 define('REVWS_MODULE_DIR', dirname(__FILE__));
 
 require_once __DIR__.'/app-translation.php';
+require_once __DIR__.'/classes/csrf.php';
 require_once __DIR__.'/classes/csv-reader.php';
 require_once __DIR__.'/classes/color.php';
 require_once __DIR__.'/classes/utils.php';
@@ -44,11 +45,12 @@ class Revws extends Module {
   private $visitor;
   private $settings;
   private $krona;
+  private $csrfToken;
 
   public function __construct() {
     $this->name = 'revws';
     $this->tab = 'administration';
-    $this->version = '1.0.11';
+    $this->version = '1.0.12';
     $this->author = 'DataKick';
     $this->need_instance = 0;
     $this->bootstrap = true;
@@ -306,6 +308,7 @@ class Revws extends Module {
   }
 
   public function hookHeader() {
+    $this->csrf();
     $controller = $this->context->controller;
     $this->includeCommonStyles($controller);
     $productId = (int)(Tools::getValue('id_product'));
@@ -492,6 +495,13 @@ class Revws extends Module {
     return $this->context->link->getPageLink('authentication', true, null, [
       'back' => $back
     ]);
+  }
+
+  public function csrf() {
+    if (! $this->csrfToken) {
+      $this->csrfToken = new \Revws\CSRFToken($this->context->cookie, $this->getSettings());
+    }
+    return $this->csrfToken;
   }
 
   public function getCSSFile() {
