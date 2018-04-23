@@ -389,7 +389,9 @@ class Revws extends Module {
 
 
   public function hookDisplayMyAccountBlock($params) {
-    return $this->hookDisplayCustomerAccount($params);
+    if ($this->getSettings()->showOnCustomerAccount()) {
+      return $this->display(__FILE__, 'my-account-block.tpl');
+    }
   }
 
 
