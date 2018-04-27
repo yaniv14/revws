@@ -25,6 +25,7 @@ use \Exception;
 class Settings {
   const APP_URL = 'REVWS_APP_URL';
   const BACKEND_APP_URL = 'REVWS_BACK_APP_URL';
+  const VERSION_URL = 'REVWS_VERSION_URL';
   const SALT = 'REVWS_SALT';
   const SETTINGS = 'REVWS_SETTINGS';
   const VERSION = 'REVWS_VERSION';
@@ -149,6 +150,11 @@ class Settings {
     return $url . "?CACHE_CONTROL";
   }
 
+  public function getVersionUrl() {
+    $url = Configuration::get(self::VERSION_URL);
+    return $url ? $url : 'https://version.getdatakick.com/version';
+  }
+
   public function getSalt() {
     $salt = Configuration::get(self::SALT);
     if (! $salt) {
@@ -163,6 +169,7 @@ class Settings {
   }
 
   public function setVersion($version) {
+    Configuration::deleteByName(self::CHECK_VERSION);
     Configuration::updateValue(self::VERSION, $version);
   }
 
