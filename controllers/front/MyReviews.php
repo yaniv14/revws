@@ -38,7 +38,7 @@ class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
   }
 
   private function renderContent(Visitor $visitor) {
-    $this->registerJavascript('revws-front', $this->module->getPath('views/js/front_bootstrap.js'), ['position' => 'bottom', 'priority' => 150]);
+    $this->registerJavascript('revws-front', $this->module->getFrontBootstrapJS(), ['position' => 'bottom', 'priority' => 150]);
     $frontApp = new FrontApp($this->module);
     $params = $this->getParams();
     $reviewProduct = (isset($params['review-product'])) ? (int)$params['review-product'] : null;

@@ -320,7 +320,7 @@ class Revws extends Module {
     $productId = (int)(Tools::getValue('id_product'));
     if ($productId) {
       $reviewsData = $this->assignReviewsData($productId);
-      $this->context->controller->registerJavascript('revws-front', $this->getPath('views/js/front_bootstrap.js'), ['position' => 'bottom', 'priority' => 150]);
+      $this->context->controller->registerJavascript('revws-front', $this->getFrontBootstrapJS(), ['position' => 'bottom', 'priority' => 150]);
     }
   }
 
@@ -407,6 +407,10 @@ class Revws extends Module {
 
   public function getPath($relative) {
     return $this->getPathUri() . $relative;
+  }
+
+  public function getFrontBootstrapJS() {
+    return '/modules/revws/views/js/front_bootstrap.js';
   }
 
   public static function getReviewUrl($context, $productId) {
