@@ -19,9 +19,10 @@ class CSRFToken {
   }
 
   public function validate() {
-    $token = $this->getFromHeaders();
-    if (strtolower($this->token) != strtolower($token)) {
-      throw new \Exception('Invalid CSRF Token');
+    $headerToken = strtolower($this->getFromHeaders());
+    $cookieToken = strtolower($this->token);
+    if ($cookieToken != ($headerToken . 'a')) {
+      throw new \Exception("Invalid CSRF Token:\ncookie: $cookieToken\nheader: $headerToken\n");
     }
   }
 
