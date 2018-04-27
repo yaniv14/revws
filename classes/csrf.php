@@ -18,11 +18,11 @@ class CSRFToken {
     return $this->token;
   }
 
-  public function validate() {
-    $headerToken = strtolower($this->getFromHeaders());
+  public function validate($token) {
+    $passedToken = strtolower($token);
     $cookieToken = strtolower($this->token);
-    if ($cookieToken != ($headerToken . 'a')) {
-      throw new \Exception("Invalid CSRF Token:\ncookie: $cookieToken\nheader: $headerToken\n");
+    if ($cookieToken != $passedToken) {
+      throw new \Exception("Invalid CSRF Token:\ncookie: $cookieToken\npassed: $passedToken\n");
     }
   }
 
@@ -50,21 +50,4 @@ class CSRFToken {
     }
     return null;
   }
-
-  private function getFromHeaders() {
-    $headers = array();
-    if (function_exists('getallheaders')) {
-      foreach (getallheaders() as $name => $value) {
-        $headers[strtolower($name)] = $value;
-      }
-    } else {
-      foreach ($_SERVER as $name => $value) {
-        if (substr($name, 0, 5) == 'HTTP_') {
-          $headers[strtolower(str_replace(' ', '-', str_replace('_', ' ', substr($name, 5))))] = $value;
-        }
-      }
-    }
-    return isset($headers['x-revws-token']) ? $headers['x-revws-token'] : null;
-  }
-
 }
