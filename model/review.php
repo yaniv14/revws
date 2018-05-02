@@ -160,9 +160,9 @@ class RevwsReview extends ObjectModel {
     return $conn->delete('revws_review_reaction', "id_review = $id ");
   }
 
-  public static function findReviews($options, $lang=null, $shop=null) {
+  public static function findReviews(Settings $settings, $options) {
     $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
-    $query = new ReviewQuery($options, $lang, $shop);
+    $query = new ReviewQuery($settings, $options);
 
     // load reviews
     $reviews = [];
@@ -197,8 +197,8 @@ class RevwsReview extends ObjectModel {
     ];
   }
 
-  public static function getByProduct($productId, Visitor $visitor, $pageSize, $page, $order) {
-    return self::findReviews([
+  public static function getByProduct($productId, Settings $settings, Visitor $visitor, $pageSize, $page, $order) {
+    return self::findReviews($settings, [
       'product' => $productId,
       'visitor' => $visitor,
       'validated' => true,
@@ -212,8 +212,8 @@ class RevwsReview extends ObjectModel {
     ]);
   }
 
-  public static function getByCustomer($customerId, $pageSize, $page) {
-    return self::findReviews([
+  public static function getByCustomer($customerId, Settings $settings, $pageSize, $page) {
+    return self::findReviews($settings, [
       'customer' => $customerId,
       'deleted' => false,
       'pageSize' => $pageSize,
@@ -298,8 +298,8 @@ class RevwsReview extends ObjectModel {
     }
   }
 
-  public static function getAverageGrade($productId) {
-    $query = new ReviewQuery([
+  public static function getAverageGrade(Settings $settings, $productId) {
+    $query = new ReviewQuery($settings, [
       'product' => (int)$productId,
       'validated' => true,
       'deleted' => false
@@ -326,6 +326,7 @@ class RevwsReview extends ObjectModel {
       'grades' => $this->grades,
       'grade' => round(Utils::calculateAverage($this->grades)),
       'title' => $this->title,
+      'language' => $this->id_lang,
       'content' => $this->content,
       'underReview' => !$this->validated,
       'reply' => $this->reply ? $this->reply : null,
@@ -417,12 +418,12 @@ class RevwsReview extends ObjectModel {
     $review->validated = !$json['underReview'];
     $review->deleted = $json['deleted'];
     $review->verified_buyer = !!$json['verifiedBuyer'];
+    $review->id_lang = (int)$json['language'];
     $review->grades = [];
     foreach ($json['grades'] as $key => $value) {
       $review->grades[(int)$key] = (int)$value;
     }
     if (! $id) {
-      $review->id_lang = (int)Context::getContext()->language->id;
       $review->id_product = (int)$json['productId'];
       $review->id_customer = (int)$json['authorId'];
       $review->validated = true;

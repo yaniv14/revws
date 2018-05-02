@@ -85,6 +85,7 @@ class FrontApp {
 
     return [
       'csrf' => $this->module->csrf()->getToken(),
+      'language' => $context->language->id,
       'shopName' => Configuration::get('PS_SHOP_NAME'),
       'translations' => $this->module->getFrontTranslations(),
       'entityType' => $entityType,
@@ -103,6 +104,7 @@ class FrontApp {
       ],
       'api' => $context->link->getModuleLink('revws', 'api', [], true),
       'appJsUrl' => $set->getAppUrl($context, $this->module),
+      'version' => $this->module->version,
       'loginUrl' => $loginUrl,
       'theme' => [
         'shape' => $this->getShapeSettings(),
@@ -136,14 +138,15 @@ class FrontApp {
     $set = $this->getSettings();
     $perPage = $set->getReviewsPerPage();
     $order = $set->getReviewOrder();
-    $reviews = RevwsReview::getByProduct($productId, $this->getVisitor(), $perPage, 0, $order);
+    $reviews = RevwsReview::getByProduct($productId, $set, $this->getVisitor(), $perPage, 0, $order);
     $reviews['reviews'] = RevwsReview::mapReviews($reviews['reviews'], $this->getPermissions());
     return $reviews;
   }
 
   public function getCustomerReviews($customerId) {
-    $perPage = $this->getSettings()->getCustomerReviewsPerPage();
-    $reviews = RevwsReview::getByCustomer($customerId, $perPage, 0);
+    $settings = $this->getSettings();
+    $perPage = $settings->getCustomerReviewsPerPage();
+    $reviews = RevwsReview::getByCustomer($customerId, $settings, $perPage, 0);
     $reviews['reviews'] = RevwsReview::mapReviews($reviews['reviews'], $this->getPermissions());
     return $reviews;
   }

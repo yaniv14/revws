@@ -50,7 +50,7 @@ class Revws extends Module {
   public function __construct() {
     $this->name = 'revws';
     $this->tab = 'administration';
-    $this->version = '1.0.13';
+    $this->version = '1.0.14';
     $this->author = 'DataKick';
     $this->need_instance = 0;
     $this->bootstrap = true;
@@ -344,7 +344,7 @@ class Revws extends Module {
 
   private function setupAverageOnProductPage($productId) {
     $set = $this->getSettings();
-    list($grade, $count) = RevwsReview::getAverageGrade($productId);
+    list($grade, $count) = RevwsReview::getAverageGrade($set, $productId);
     $this->context->smarty->assign('productId', $productId);
     $this->context->smarty->assign('grade', $grade);
     $this->context->smarty->assign('reviewCount', $count);
@@ -358,29 +358,31 @@ class Revws extends Module {
 
 
   public function hookDisplayProductListReviews($params) {
-    if ($this->getSettings()->showOnProductListing()) {
-      $productId = (int) $params['product']['id_product'];
-      list($grade, $count) = RevwsReview::getAverageGrade($productId);
+    $settings = $this->getSettings();
+    if ($settings->showOnProductListing()) {
+      $productId = self::getProductId($params['product']);
+      list($grade, $count) = RevwsReview::getAverageGrade($settings, $productId);
       $this->context->smarty->assign('productId', $productId);
       $this->context->smarty->assign('grade', $grade);
       $this->context->smarty->assign('reviewCount', $count);
       $this->context->smarty->assign('shape', $this->getShapeSettings());
-      $this->context->smarty->assign('shapeSize', $this->getSettings()->getShapeSize());
+      $this->context->smarty->assign('shapeSize', $settings->getShapeSize());
       $this->context->smarty->assign('reviewsUrl', $this->getProductReviewsLink($productId));
       return $this->display(__FILE__, 'product_list.tpl', $this->getCacheId() . '|' . $productId);
     }
   }
 
   public function hookDisplayProductComparison($params) {
-    if ($this->getSettings()->showOnProductComparison()) {
+    $settings = $this->getSettings();
+    if ($settings->showOnProductComparison()) {
       $averages = [];
       foreach ($params['list_ids_product'] as $idProduct) {
         $productId = (int)$idProduct;
-        $averages[$productId] = RevwsReview::getAverageGrade($productId);
+        $averages[$productId] = RevwsReview::getAverageGrade($settings, $productId);
       }
       $this->context->smarty->assign('averages', $averages);
       $this->context->smarty->assign('shape', $this->getShapeSettings());
-      $this->context->smarty->assign('shapeSize', $this->getSettings()->getShapeSize());
+      $this->context->smarty->assign('shapeSize', $settings->getShapeSize());
       $this->context->smarty->assign('list_ids_product', $params['list_ids_product']);
       return $this->display(__FILE__, 'products_comparison.tpl');
     }
@@ -489,11 +491,17 @@ class Revws extends Module {
   }
 
   private function getProductReviewsLink($product) {
+    $product = (int)$product;
+    if (! $product) {
+      return '';
+    }
     $link = $this->context->link->getProductLink($product);
-    if (strpos($link, '?') === false) {
-      $link .= '?show=reviews';
-    } else {
-      $link .= '&show=reviews';
+    if ($link) {
+      if (strpos($link, '?') === false) {
+        $link .= '?show=reviews';
+      } else {
+        $link .= '&show=reviews';
+      }
     }
     return $link;
   }
@@ -573,6 +581,19 @@ class Revws extends Module {
       @mkdir($dir);
     }
     @file_put_contents($filename, $css);
+  }
+
+  private static function getProductId($product) {
+    if (is_array($product) && isset($product['id_product'])) {
+      return (int)$product['id_product'];
+    }
+    if (is_object($product) && property_exists($product, 'id_product')) {
+      return (int)$product->id_product;
+    }
+    if (is_int($product)) {
+      return (int)$product;
+    }
+    return null;
   }
 
 }
