@@ -483,10 +483,12 @@ class Revws extends Module {
   }
 
   public function includeCommonStyles($controller, $back=false) {
+    $version = $this->getCSSVersion($this->getSettings());
+    $file = $this->getCSSFile();
     if ($back) {
-      $controller->addCSS($this->getCSSFile(), 'all');
+      $controller->addCSS("$file?$version", 'all');
     } else {
-      $controller->registerStylesheet('revws-css', $this->getCSSFile(), ['media' => 'all', 'priority' => 20]);
+      $controller->registerStylesheet("revws-css-$version", $file, ['media' => 'all', 'priority' => 20]);
     }
   }
 
@@ -526,16 +528,18 @@ class Revws extends Module {
 
   public function getCSSFile() {
     $set = $this->getSettings();
-    $filename = $this->getCSSFilename($set);
-    if (! file_exists($filename)) {
+    $version = $this->getCSSVersion($set);
+    $filename = REVWS_MODULE_DIR . '/views/css/revws.css';
+    if ($set->getCurrentCSSVersion() != $version || !file_exists($filename)) {
       $this->generateCSS($set, $filename);
+      $set->setCurrentCSSVersion($version);
     }
-    return str_replace(_PS_ROOT_DIR_, '', $filename);
+    return $this->getPath("views/css/revws.css");
   }
 
-  private function getCSSFilename($set) {
-    static $filename;
-    if (is_null($filename)) {
+  private function getCSSVersion($set) {
+    static $version;
+    if (is_null($version)) {
       $data = 'CACHE_CONTROL';
       $data .= '-' . $set->getVersion();
       $data .= '-' . json_encode($this->getCSSSettings($set));
@@ -545,10 +549,9 @@ class Revws extends Module {
           $data .= '-' . filemtime($source);
         }
       }
-      $id = md5($data);
-      $filename = _PS_THEME_DIR_ . "assets/cache/" . $this->name . "-$id.css";
+      $version = md5($data);
     }
-    return $filename;
+    return $version;
   }
 
   private function getCSSSettings($set) {
@@ -571,7 +574,8 @@ class Revws extends Module {
     Tools::clearSmartyCache();
     Media::clearCache();
     $this->smarty->assign('cssSettings', $this->getCSSSettings($set));
-    $css = $this->display(__FILE__, 'css.tpl');
+    $css = "/* Automatically generated file - DO NOT EDIT, YOUR CHANGES WOULD BE LOST */\n\n";
+    $css .= $this->display(__FILE__, 'css.tpl');
     $extend = $this->getTemplatePath('css-extend.tpl');
     if ($extend) {
       $css .= "\n" . $this->display(__FILE__, 'css-extend.tpl');
