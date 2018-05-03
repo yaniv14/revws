@@ -488,7 +488,9 @@ class Revws extends Module {
     if ($back) {
       $controller->addCSS("$file?$version", 'all');
     } else {
-      $controller->registerStylesheet("revws-css-$version", $file, ['media' => 'all', 'priority' => 20]);
+      // we need to set priority in order to force CCC to regenerate bundle when $version changes
+      $priority = 1000 + ((intval(substr($version, 0, 8), 16) >> 1) % 1000);
+      $controller->registerStylesheet("revws-css", $file, ['media' => 'all', 'priority' => $priority]);
     }
   }
 
