@@ -171,7 +171,7 @@ class FrontApp {
     if ($res) {
       $imageId = (int)$res['id_image'];
       $rewrite = $product->link_rewrite[$lang];
-      $image = $link->getImageLink($rewrite, $imageId, ImageType::getFormatedName('home'));
+      $image = $link->getImageLink($rewrite, $imageId, ImageType::getFormattedName('home'));
     }
     return [
       'id' => $productId,
