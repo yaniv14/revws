@@ -127,6 +127,7 @@ class FrontApp {
         'displayCriteria' => $set->getDisplayCriteriaPreference()
       ],
       'gdpr' => [
+        'mode' => $set->getGDPRPreference(),
         'active' => $gdpr->isEnabled(),
         'text' => $gdpr->getConsentMessage($visitor)
       ],
