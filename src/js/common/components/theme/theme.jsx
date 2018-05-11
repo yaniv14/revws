@@ -33,7 +33,9 @@ class AppTheme extends React.PureComponent<Props> {
     });
     return (
       <MuiThemeProvider theme={theme}>
-        { children }
+        <div className="revws-reset">
+          { children }
+        </div>
       </MuiThemeProvider>
     );
   }
