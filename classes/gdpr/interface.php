@@ -18,35 +18,9 @@
 */
 
 namespace Revws;
-use \RevwsReview;
 
-class EmployeePermissions implements Permissions {
-  static $instance = null;
-
-  public static function getInstance() {
-    if (! self::$instance) {
-      self::$instance = new EmployeePermissions();
-    }
-    return self::$instance;
-  }
-
-  public function canCreateReview($productId) {
-    return true;
-  }
-
-  public function canReportAbuse(RevwsReview $review) {
-    return false;
-  }
-
-  public function canVote(RevwsReview $review) {
-    return false;
-  }
-
-  public function canDelete(RevwsReview $review) {
-    return true;
-  }
-
-  public function canEdit(RevwsReview $review) {
-    return true;
-  }
+interface GDPRInterface {
+  function getConsentMessage(Visitor $visitor);
+  function hasConsent(Visitor $visitor);
+  function logConsent(Visitor $visitor);
 }

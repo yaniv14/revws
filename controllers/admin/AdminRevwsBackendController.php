@@ -46,6 +46,13 @@ class AdminRevwsBackendController extends ModuleAdminController {
       ];
     };
     $lang = $this->context->language->id;
+    $platform = 'prestashop';
+    $platformVersion = _PS_VERSION_;
+    if (defined('_TB_VERSION_')) {
+      $platform = 'thirtybees';
+      $platformVersion = _TB_VERSION_;
+    }
+
     $this->context->smarty->assign([
       'help_link' => null,
       'title' => $this->l('Product reviews'),
@@ -59,8 +66,8 @@ class AdminRevwsBackendController extends ModuleAdminController {
           'shapes' => Shapes::getAvailableShapes(),
           'languages' => $languages,
           'language' => $lang,
-          'platform' => (defined('_TB_VERSION_') ? 'thirtybees' : 'prestashop'),
-          'platformVersion' => _PS_VERSION_,
+          'platform' => $platform,
+          'platformVersion' => $platformVersion,
           'environment' => [
             'mailstream' => Module::isInstalled('mailstream'),
             'krona' => $this->module->getKrona()->isInstalled(),
@@ -306,9 +313,10 @@ class AdminRevwsBackendController extends ModuleAdminController {
   }
 
   private function getCategories($options) {
-    return Utils::mapKeyValue('id_category', 'name', Category::getAllCategoriesName(
-      null, $this->context->language->id, true, null, true, "AND `c`.`level_depth` > 0"
-    ));
+    $lang = $this->context->language->id;
+    $exists = is_callable(array('Category', 'getAllCategoriesName'));
+    $categories = $exists ? Category::getAllCategoriesName(null, $lang, true, null, true, "AND `c`.`level_depth` > 0") : Category::getSimpleCategories($lang);
+    return Utils::mapKeyValue('id_category', 'name', $categories);
   }
 
   private function getReviews($options) {

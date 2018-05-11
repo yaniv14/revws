@@ -18,35 +18,33 @@
 */
 
 namespace Revws;
-use \RevwsReview;
+use \Hook;
+use \Module;
+use \Db;
 
-class EmployeePermissions implements Permissions {
-  static $instance = null;
+class PrestashopGDRP implements GDPRInterface {
+  const MODULE_NAME = 'psgdpr';
+  private $revwsModuleId;
+  private $psgdpr;
 
-  public static function getInstance() {
-    if (! self::$instance) {
-      self::$instance = new EmployeePermissions();
-    }
-    return self::$instance;
+  public static function isAvailable() {
+    return Module::isInstalled(self::MODULE_NAME) && Module::isEnabled(self::MODULE_NAME);
   }
 
-  public function canCreateReview($productId) {
-    return true;
+  public function __construct($revwsModuleId) {
+    $this->psgdpr = Module::getInstanceByName(self::MODULE_NAME);
+    $this->revwsModuleId = $revwsModuleId;
   }
 
-  public function canReportAbuse(RevwsReview $review) {
+  public function getConsentMessage(Visitor $visitor) {
+    return \GDPRConsent::getConsentMessage($this->revwsModuleId, $visitor->getLanguage());
+  }
+
+  public function hasConsent(Visitor $visitor) {
     return false;
   }
 
-  public function canVote(RevwsReview $review) {
+  public function logConsent(Visitor $visitor) {
     return false;
-  }
-
-  public function canDelete(RevwsReview $review) {
-    return true;
-  }
-
-  public function canEdit(RevwsReview $review) {
-    return true;
   }
 }

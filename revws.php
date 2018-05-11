@@ -23,6 +23,10 @@ require_once __DIR__.'/classes/csrf.php';
 require_once __DIR__.'/classes/csv-reader.php';
 require_once __DIR__.'/classes/color.php';
 require_once __DIR__.'/classes/utils.php';
+require_once __DIR__.'/classes/gdpr/interface.php';
+require_once __DIR__.'/classes/gdpr/psgdpr.php';
+require_once __DIR__.'/classes/gdpr/basic.php';
+require_once __DIR__.'/classes/gdpr/gdpr.php';
 require_once __DIR__.'/classes/settings.php';
 require_once __DIR__.'/classes/permissions.php';
 require_once __DIR__.'/classes/visitor-permissions.php';
@@ -46,6 +50,7 @@ class Revws extends Module {
   private $settings;
   private $krona;
   private $csrfToken;
+  private $gdpr;
 
   public function __construct() {
     $this->name = 'revws';
@@ -103,7 +108,10 @@ class Revws extends Module {
       'discoverReviewModule',
       'datakickExtend',
       'actionRegisterKronaAction',
-      'displayRevwsReview'
+      'displayRevwsReview',
+      'registerGDPRConsent',
+      'actionDeleteGDPRCustomer',
+      'actionExportGDPRData'
     ]);
   }
 
@@ -412,7 +420,7 @@ class Revws extends Module {
   }
 
   public function getFrontBootstrapJS() {
-    return '/modules/revws/views/js/front_bootstrap.js';
+    return '/modules/'.$this->name.'/views/js/front_bootstrap.js';
   }
 
   public static function getReviewUrl($context, $productId) {
@@ -425,6 +433,29 @@ class Revws extends Module {
       'getReviewUrl' => ['Revws', 'getReviewUrl'],
       'canReviewProductSqlFragment' => ['RevwsReview', 'canReviewProductSqlFragment'],
     ];
+  }
+
+  public function hookRegisterGDPRConsent() {
+  }
+
+  public function hookActionExportGDPRData($customer) {
+    if (isset($customer['email']) && Validate::isEmail($customer['email'])) {
+      $email = $customer['email'];
+      $id = isset($customer['id']) ? $customer['id'] : null;
+      $data = $this->getGDPR()->getData($id, $email);
+      if (!empty($data['reviews']) || !empty($data['reactions'])) {
+        $list = array_merge($data['reviews'], $data['reactions']);
+        return json_encode($list);
+      }
+    }
+  }
+
+  public function hookActionDeleteGDPRCustomer($customer) {
+    if (isset($customer['email']) && Validate::isEmail($customer['email'])) {
+      $email = $customer['email'];
+      $id = isset($customer['id']) ? $customer['id'] : null;
+      return json_encode($this->getGDPR()->deleteData($id, $email));
+    }
   }
 
   public function hookDataKickExtend($params) {
@@ -483,14 +514,11 @@ class Revws extends Module {
   }
 
   public function includeCommonStyles($controller, $back=false) {
-    $version = $this->getCSSVersion($this->getSettings());
     $file = $this->getCSSFile();
     if ($back) {
-      $controller->addCSS("$file?$version", 'all');
+      $controller->addCSS($file, 'all');
     } else {
-      // we need to set priority in order to force CCC to regenerate bundle when $version changes
-      $priority = 1000 + ((intval(substr($version, 0, 8), 16) >> 1) % 1000);
-      $controller->registerStylesheet("revws-css", $file, ['media' => 'all', 'priority' => $priority]);
+      $controller->registerStylesheet("revws-css", $file, ['media' => 'all', 'priority' => 1000]);
     }
   }
 
@@ -528,15 +556,22 @@ class Revws extends Module {
     return $this->csrfToken;
   }
 
+  public function getGDPR() {
+    if (! $this->gdpr) {
+      $this->gdpr = new \Revws\GDPR($this->getSettings());
+    }
+    return $this->gdpr;
+  }
+
   public function getCSSFile() {
     $set = $this->getSettings();
     $version = $this->getCSSVersion($set);
-    $filename = REVWS_MODULE_DIR . '/views/css/revws.css';
-    if ($set->getCurrentCSSVersion() != $version || !file_exists($filename)) {
+    $name = "views/css/revws-$version.css";
+    $filename = REVWS_MODULE_DIR . '/' . $name;
+    if (!file_exists($filename)) {
       $this->generateCSS($set, $filename);
-      $set->setCurrentCSSVersion($version);
     }
-    return $this->getPath("views/css/revws.css");
+    return $this->getPath($name);
   }
 
   private function getCSSVersion($set) {

@@ -18,35 +18,21 @@
 */
 
 namespace Revws;
-use \RevwsReview;
+use \Hook;
+use \Module;
+use \Db;
 
-class EmployeePermissions implements Permissions {
-  static $instance = null;
+class BasicGDPR implements GDPRInterface {
 
-  public static function getInstance() {
-    if (! self::$instance) {
-      self::$instance = new EmployeePermissions();
-    }
-    return self::$instance;
+  public function getConsentMessage(Visitor $visitor) {
+    return '';
   }
 
-  public function canCreateReview($productId) {
-    return true;
-  }
-
-  public function canReportAbuse(RevwsReview $review) {
+  public function hasConsent(Visitor $visitor) {
     return false;
   }
 
-  public function canVote(RevwsReview $review) {
-    return false;
-  }
-
-  public function canDelete(RevwsReview $review) {
-    return true;
-  }
-
-  public function canEdit(RevwsReview $review) {
-    return true;
+  public function logConsent(Visitor $visitor) {
+    // no-op
   }
 }
