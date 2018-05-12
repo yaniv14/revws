@@ -18,48 +18,48 @@ a .revws-grading {
 }
 
 .revws-grading-product .revws-grade-wrap {
-  padding-left: {$cssSettings.shapeSize.product / 8}px;
-  padding-right: {$cssSettings.shapeSize.product / 8}px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .revws-grading-criterion .revws-grade-wrap {
-  padding-left: {$cssSettings.shapeSize.product * 0.875 / 8}px;
-  padding-right: {$cssSettings.shapeSize.product * 0.875 / 8}px;
+  padding-left: 1.75px;
+  padding-right: 1.75px;
 }
 
 .revws-grading-list .revws-grade-wrap {
-  padding-left: {$cssSettings.shapeSize.list / 8}px;
-  padding-right: {$cssSettings.shapeSize.list / 8}px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .revws-grading-create .revws-grade-wrap {
-  padding-left: {$cssSettings.shapeSize.create / 8}px;
-  padding-right: {$cssSettings.shapeSize.create / 8}px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .revws-grading-product .revws-grade {
-  width: {$cssSettings.shapeSize.product}px;
-  height: {$cssSettings.shapeSize.product}px;
+  width: 16px;
+  height: 16px;
 }
 
 .revws-grading-criterion .revws-grade {
-  width: {$cssSettings.shapeSize.product * 0.875}px;
-  height: {$cssSettings.shapeSize.product * 0.875}px;
+  width: 14px;
+  height: 14px;
 }
 
 .revws-grading-list .revws-grade {
-  width: {$cssSettings.shapeSize.list}px;
-  height: {$cssSettings.shapeSize.list}px;
+  width: 16px;
+  height: 16px;
 }
 
 .revws-grading-create .revws-grade {
-  width: {$cssSettings.shapeSize.create}px;
-  height: {$cssSettings.shapeSize.create}px;
+  width: 80px;
+  height: 80px;
 }
 
 .revws-grade {
   transition: all 200ms linear;
-  stroke-width: {$cssSettings.shape.strokeWidth};
+  stroke-width: 1;
 }
 
 .revws-grade path {
@@ -67,18 +67,18 @@ a .revws-grading {
 }
 
 .revws-grade-off path {
-  fill: {$cssSettings.colors.fillColorOff};
-  stroke: {$cssSettings.colors.borderColorOff};
+  fill: transparent;
+  stroke: #d5d5d5;
 }
 
 .revws-grade-on path {
-  fill: {$cssSettings.colors.fillColor};
-  stroke: {$cssSettings.colors.borderColor};
+  fill: #ffd055;
+  stroke: #ffd055;
 }
 
 .revws-grade-highlight path {
-  fill: {$cssSettings.colors.fillColorHigh};
-  stroke: {$cssSettings.colors.borderColorHigh};
+  fill: #bf9c3f;
+  stroke: #bf9c3f;
 }
 
 /* review layout */
@@ -130,7 +130,7 @@ a .revws-grading {
 }
 
 .revws-review-author {
-  min-width: {6 * ($cssSettings.shapeSize.list + $cssSettings.shapeSize.list/4)}px;
+  min-width: 120px;
 }
 
 .revws-review-author-name {

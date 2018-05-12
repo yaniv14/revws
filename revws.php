@@ -416,7 +416,9 @@ class Revws extends Module {
   }
 
   public function getPath($relative) {
-    return $this->getPathUri() . $relative;
+    $uri = rtrim($this->getPathUri(), '/');
+    $rel = ltrim($relative, '/');
+    return "$uri/$rel";
   }
 
   public function getFrontBootstrapJS() {
@@ -575,6 +577,10 @@ class Revws extends Module {
     $filename = REVWS_MODULE_DIR . '/' . $name;
     if (!file_exists($filename)) {
       $this->generateCSS($set, $filename);
+      if (! file_exists($filename)) {
+        // return fallback css file
+        return $this->getPath("views/css/fallback.css");
+      }
     }
     return $this->getPath($name);
   }
@@ -601,7 +607,6 @@ class Revws extends Module {
     $colors['fillColorHigh'] = \Revws\Color::emphasize($colors['fillColor']);
     $colors['borderColorHigh'] = \Revws\Color::emphasize($colors['borderColor']);
     return [
-      'imgs' => $this->getPath('views/img'),
       'shape' => $this->getShapeSettings(),
       'shapeSize' => [
         'product' => $set->getShapeSize(),
