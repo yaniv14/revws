@@ -98,9 +98,8 @@ class Revws extends Module {
     return $this->setupHooks([
       'header',
       'displayProductExtraContent',
-      'displayRightColumnProduct',
       'displayProductListReviews',
-      'displayProductButtons',
+      'displayProductAdditionalInfo',
       'displayProductComparison',
       'displayCustomerAccount',
       'displayMyAccountBlock',
@@ -332,16 +331,7 @@ class Revws extends Module {
     }
   }
 
-  public function hookDisplayRightColumnProduct($params) {
-    $set = $this->getSettings();
-    if ($set->getAveragePlacement() == 'rightColumn') {
-      $productId = (int)(Tools::getValue('id_product'));
-      $this->setupAverageOnProductPage($productId);
-      return $this->display(__FILE__, 'product_extra.tpl');
-    }
-  }
-
-  public function hookDisplayProductButtons($params) {
+  public function hookDisplayProductAdditionalInfo($params) {
     $set = $this->getSettings();
     if ($set->getAveragePlacement() == 'buttons') {
       $productId = (int)(Tools::getValue('id_product'));

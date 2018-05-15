@@ -397,10 +397,10 @@ class Settings {
   }
 
   private function toAveragePlacement($placement) {
-    if (in_array($placement, ['rightColumn', 'buttons', 'none'])) {
+    if (in_array($placement, ['buttons', 'none'])) {
       return $placement;
     }
-    return 'extra';
+    return 'buttons';
   }
 
   private function toShape($shape) {

@@ -489,8 +489,7 @@ class Settings extends React.PureComponent<Props, State> {
             label={__("Display review average in")}
             value={settings.display.product.averagePlacement}
             onChange={e => this.set(['display', 'product', 'averagePlacement'], e.target.value)}>
-            <MenuItem value='rightColumn'>{__('Right column')}</MenuItem>
-            <MenuItem value='buttons'>{__('Product buttons')}</MenuItem>
+            <MenuItem value='buttons'>{__('Additional info')}</MenuItem>
             <MenuItem value='none'>{__("Don't show review average")}</MenuItem>
           </TextField>
           <div className={styles.space} />
