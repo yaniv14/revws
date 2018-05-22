@@ -82,9 +82,6 @@ a .revws-grading {
 }
 
 /* review layout */
-#revws-tab-content {
-  margin: 0 0 20px 0;
-}
 
 .revws-review-list {
   position: relative;
@@ -118,6 +115,7 @@ a .revws-grading {
 }
 
 .revws-review {
+  position: relative;
   display: flex;
   flex-direction: row;
   margin: 10px 0px;
@@ -174,6 +172,9 @@ a .revws-grading {
   color: #222;
   font-weight: bold;
   font-size: 16px;
+}
+
+.revws-review-title a {
   cursor: pointer;
 }
 
@@ -316,7 +317,11 @@ a .revws-grading {
 }
 
 .revws-product-list-empty {
+  {if $cssSettings.productList.noReviews == 'omit'}
   display: none;
+  {elseif $cssSettings.productList.noReviews == 'hide'}
+  opacity: 0;
+  {/if}
 }
 
 .revws-replies {

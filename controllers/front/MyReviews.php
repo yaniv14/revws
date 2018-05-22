@@ -18,6 +18,7 @@
 */
 use \Revws\Settings;
 use \Revws\Visitor;
+use \Revws\Permissions;
 use \Revws\FrontApp;
 
 class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
@@ -31,30 +32,30 @@ class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
   public function initContent() {
     parent::initContent();
     if ($this->isLoggedIn()) {
-      $this->renderContent($this->module->getVisitor());
+      $this->renderContent($this->module->getVisitor(), $this->module->getPermissions());
     } else {
       Tools::redirect('index.php?controller=authentication&back='.urlencode($this->selfLink()));
     }
   }
 
-  private function renderContent(Visitor $visitor) {
-    $this->registerJavascript('revws-front', $this->module->getFrontBootstrapJS(), ['position' => 'bottom', 'priority' => 150]);
-    $frontApp = new FrontApp($this->module);
+  private function renderContent(Visitor $visitor, Permissions $permissions) {
+    $frontApp = $this->module->getFrontApp();
+    $list = $frontApp->addMyReviewsWidget();
     $params = $this->getParams();
     $reviewProduct = (isset($params['review-product'])) ? (int)$params['review-product'] : null;
-    $reviewsData = $frontApp->getData('customer', $visitor->getCustomerId(), $reviewProduct);
-    if ($reviewProduct && isset($reviewsData['products'][$reviewProduct])) {
-      $toReview = $reviewsData['products'][$reviewProduct];
-      if ($toReview['canCreate']) {
-        $reviewsData['initActions'] = [[
-          'type' => 'TRIGGER_CREATE_REVIEW',
-          'productId' => $reviewProduct
-        ]];
-      }
+    if ($reviewProduct && $permissions->canCreateReview($reviewProduct)) {
+      $frontApp->addInitAction([
+        'type' => 'TRIGGER_CREATE_REVIEW',
+        'productId' => $reviewProduct
+      ]);
     }
-    $this->context->smarty->assign('reviewsData', $reviewsData);
-    $this->context->smarty->assign('microdata', $this->module->getSettings()->emitRichSnippets());
-    Media::addJsDef([ 'revwsData' => $reviewsData ]);
+
+    $this->context->smarty->assign([
+      'reviewList' => $list->getData(),
+      'visitor' => $frontApp->getVisitorData(),
+      'reviewEntities' => $frontApp->getEntitites(),
+      'reviewsData' => $frontApp->getStaticData()
+    ]);
     $this->setTemplate('module:revws/views/templates/front/my-reviews.tpl');
   }
 

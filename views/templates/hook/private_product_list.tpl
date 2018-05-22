@@ -23,41 +23,54 @@
 *
 *}
 {strip}
-{if $reviewsData.reviews.total > 0}
-  {include file="module:revws/views/templates/hook/private_review_list.tpl" reviewsData=$reviewsData}
-  {include file="module:revws/views/templates/hook/private_review_list_paging.tpl" reviewsData=$reviewsData}
-  {if $reviewsData.canCreate}
-    <div class="form-group">
-      <a class="btn btn-primary" data-revws-create-trigger="{$productId}">
-        {l s='Write your review!' mod='revws'}
-      </a>
-    </div>
-  {else}
-    {if $reviewsData.visitor.type === 'guest'}
-    <div class="form-group">
-      <a class="btn btn-primary" href="{$reviewsData.loginUrl}">
-        {l s='Sign in to write a review' mod='revws'}
-      </a>
-    </div>
-    {/if}
-  {/if}
-{else}
-  {if $reviewsData.canCreate}
-    <div class="form-group">
-      <a class="btn btn-primary" data-revws-create-trigger="{$productId}">
-        {l s='Be the first to write a review!' mod='revws'}
-      </a>
-    </div>
-  {else}
-    {if $reviewsData.visitor.type === 'guest' && $reviewsData.preferences.showSignInButton}
+<div id="revws-portal-{$reviewList.id}">
+{assign "hasReviewed" in_array($productId, $visitor.reviewedProducts)}
+{assign "canReview" !($visitor.type === 'guest' && !$reviewsData.preferences.allowGuestReviews) && !$hasReviewed}
+{if $reviewList.total > 0}
+  {include
+    file="module:revws/views/templates/hook/private_review_list.tpl"
+    reviewList=$reviewList
+    reviewsData=$reviewsData
+    displayCriteria=$reviewsData.preferences.displayCriteria
+    microdata=$reviewsData.preferences.microdata
+  }
+  {if !$hasReviewed}
+    {if $canReview}
+      <div class="form-group">
+        <a class="btn btn-primary" data-revws-create-trigger="{$productId}">
+          {l s='Write your review!' mod='revws'}
+        </a>
+      </div>
+    {else}
+      {if $visitor.type === 'guest'}
       <div class="form-group">
         <a class="btn btn-primary" href="{$reviewsData.loginUrl}">
           {l s='Sign in to write a review' mod='revws'}
         </a>
       </div>
+      {/if}
+    {/if}
+  {/if}
+{else}
+  {if !$hasReviewed}
+    {if $canReview}
+      <div class="form-group">
+        <a class="btn btn-primary" data-revws-create-trigger="{$productId}">
+          {l s='Be the first to write a review!' mod='revws'}
+        </a>
+      </div>
     {else}
-      <div class="form-group">{l s='No customer reviews for the moment.' mod='revws'}</div>
+      {if $visitor.type === 'guest' && $reviewsData.preferences.showSignInButton}
+        <div class="form-group">
+          <a class="btn btn-primary" href="{$reviewsData.loginUrl}">
+            {l s='Sign in to write a review' mod='revws'}
+          </a>
+        </div>
+      {else}
+        <div class="form-group">{l s='No customer reviews for the moment.' mod='revws'}</div>
+      {/if}
     {/if}
   {/if}
 {/if}
+</div>
 {/strip}

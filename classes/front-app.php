@@ -27,139 +27,220 @@ use \Product;
 use \Validate;
 use \Exception;
 use \ImageType;
+use \JsonSerializable;
 
-class FrontApp {
+class FrontApp implements JsonSerializable {
   private $module;
+  private $lists = [];
+  private $staticData = null;
+  private $visitorData = null;
+  private $entities = null;
+  private $extraProducts = [];
+  private $initActions = [];
+  private $widgets = [];
 
   public function __construct($module) {
     $this->module = $module;
   }
 
-  public function getData($entityType, $entityId, $reviewProduct=null) {
-    $entityId = (int)$entityId;
-    $context = $this->getContext();
-    $visitor = $this->getVisitor();
-    $perms = $this->getPermissions();
-    $set = $this->getSettings();
-    $loginUrl;
-    if ($entityType == 'product') {
-      $products = [
-        $entityId => self::getProductData($entityId, $this->getLanguage(), $this->getPermissions())
-      ];
-      $reviews = $this->getProductReviews($entityId);
-      $canCreate = $products[$entityId]['canCreate'];
-      $productsToReview = [];
-      if (! $visitor->hasWrittenReview($entityId)) {
-        $productsToReview[] = $entityId;
-      }
-      $loginUrl = $this->module->getLoginUrl($entityId);
+  public function addList($type, $entity) {
+    $id = "$type-$entity";
+    $settings = $this->getSettings();
+    if ($type === 'product') {
+      $pageSize = $settings->getReviewsPerPage();
+      $order = $settings->getReviewOrder();
+    } else if ($type === 'customer') {
+      $pageSize = $settings->getCustomerReviewsPerPage();
+      $order = 'id';
     } else {
-      $products = [];
-      $reviews = $this->getCustomerReviews($entityId);
-      $canCreate = false;
-      $reviewedProducts = $visitor->getReviewedProducts();
-      foreach ($reviewedProducts as $productId) {
-        $productId = (int)$productId;
-        if (! isset($products[$productId])) {
-          $products[$productId] = self::getProductData($productId, $this->getLanguage(), $this->getPermissions());
-        }
-      }
-      $productsToReview = $visitor->getProductsToReview();
-      foreach ($productsToReview as $productId) {
-        $productId = (int)$productId;
-        if (! isset($products[$productId])) {
-          $products[$productId] = self::getProductData($productId, $this->getLanguage(), $this->getPermissions());
-        }
-      }
-      if ($reviewProduct) {
-        $reviewProduct = (int)$reviewProduct;
-        if (! isset($products[$reviewProduct])) {
-          try {
-            $products[$reviewProduct] = self::getProductData($reviewProduct, $this->getLanguage(), $this->getPermissions());
-          } catch (Exception $ignore) {
-          }
-        }
-      }
-      $loginUrl = $this->module->getLoginUrl(null);
+      throw new Exception("Invalid entity type $type");
     }
-    $gdpr = $this->module->getGDPR();
+    $conditions = [ $type => (int)$entity ];
+    $list = new ReviewList($this->module, $id, $conditions, 0, $pageSize, $order, 'desc');
+    $this->lists[$id] = $list;
+    if ($this->entities) {
+      $this->entities = $this->loadEntities($this->entities);
+    };
+    return $list;
+  }
 
+  public function addInitAction($action) {
+    $this->initActions[] = $action;
+  }
+
+  public function addWidget($widget) {
+    $this->widgets[] = $widget;
+  }
+
+  public function addProductListWidget($productId) {
+    $list = $this->addList('product', $productId);
+    $this->addWidget([
+      'type' => 'productList',
+      'productId' => $productId,
+      'listId' => $list->getId()
+    ]);
+    return $list;
+  }
+
+  public function addMyReviewsWidget() {
+    $customerId = $this->getVisitor()->getCustomerId();
+    $list = $this->addList('customer', $customerId);
+    $this->addWidget([
+      'type' => 'myReviews',
+      'customerId' => $customerId,
+      'listId' => $list->getId()
+    ]);
+    return $list;
+  }
+
+  public function jsonSerialize() {
     return [
-      'csrf' => $this->module->csrf()->getToken(),
-      'language' => $visitor->getLanguage(),
-      'shopName' => Configuration::get('PS_SHOP_NAME'),
+      'visitor' => $this->getVisitorData(),
+      'settings' => $this->getStaticData(),
+      'reviews' => $this->getReviews(),
+      'entities' => $this->getEntitites(),
+      'lists' => $this->getLists(),
+      'widgets' => $this->widgets,
       'translations' => $this->module->getFrontTranslations(),
-      'entityType' => $entityType,
-      'entityId' => $entityId,
-      'products' => $products,
-      'productsToReview' => $productsToReview,
-      'reviews' => $reviews,
-      'visitor' => [
+      'initActions' => $this->initActions
+    ];
+  }
+
+  public function getVisitorData() {
+    if (is_null($this->visitorData)) {
+      $settings = $this->getSettings();
+      $visitor = $this->getVisitor();
+      $this->visitorData = [
         'type' => $visitor->getType(),
         'id' => $visitor->getId(),
         'firstName' => $visitor->getFirstName(),
         'lastName' => $visitor->getLastName(),
         'pseudonym' => $visitor->getPseudonym(),
-        'nameFormat' => $set->getNamePreference(),
-        'email' => $visitor->getEmail()
-      ],
-      'api' => $context->link->getModuleLink('revws', 'api', [], true),
-      'appJsUrl' => $set->getAppUrl($context, $this->module),
-      'version' => $this->module->version,
-      'loginUrl' => $loginUrl,
-      'theme' => [
-        'shape' => $this->getShapeSettings(),
-        'shapeSize' => [
-          'product' => $set->getShapeSize(),
-          'list' => $set->getShapeSize(),
-          'create' => $set->getShapeSize() * 5
+        'nameFormat' => $settings->getNamePreference(),
+        'email' => $visitor->getEmail(),
+        'language' => $visitor->getLanguage(),
+        'productsToReview' => $visitor->getProductsToReview(),
+        'reviewedProducts' => $visitor->getReviewedProducts(),
+      ];
+    }
+    return $this->visitorData;
+  }
+
+  public function getStaticData() {
+    if (is_null($this->staticData)) {
+      $context = $this->getContext();
+      $visitor = $this->getVisitor();
+      $perms = $this->getPermissions();
+      $set = $this->getSettings();
+      $gdpr = $this->module->getGDPR();
+
+      $this->staticData = [
+        'version' => $this->module->version,
+        'api' => $context->link->getModuleLink('revws', 'api', [], true),
+        'appJsUrl' => $set->getAppUrl($context, $this->module),
+        'loginUrl' => $this->module->getLoginUrl(),
+        'csrf' => $this->module->csrf()->getToken(),
+        'shopName' => Configuration::get('PS_SHOP_NAME'),
+        'theme' => [
+          'shape' => $this->getShapeSettings(),
+          'shapeSize' => [
+            'product' => $set->getShapeSize(),
+            'list' => $set->getShapeSize(),
+            'create' => $set->getShapeSize() * 5
+          ]
+        ],
+        'criteria' => RevwsCriterion::getCriteria($this->getLanguage()),
+        'preferences' => [
+          'allowEmptyReviews' => $set->allowEmptyReviews(),
+          'allowReviewWithoutCriteria' => $set->allowReviewWithoutCriteria(),
+          'allowGuestReviews' => $set->allowGuestReviews(),
+          'customerReviewsPerPage' => $set->getCustomerReviewsPerPage(),
+          'customerMaxRequests' => $set->getCustomerMaxRequests(),
+          'showSignInButton' => $set->showSignInButton(),
+          'placement' => $set->getPlacement(),
+          'displayCriteria' => $set->getDisplayCriteriaPreference(),
+          'microdata' => $set->emitRichSnippets()
+        ],
+        'gdpr' => [
+          'mode' => $set->getGDPRPreference(),
+          'active' => $gdpr->isEnabled(),
+          'text' => $gdpr->getConsentMessage($visitor)
         ]
-      ],
-      'criteria' => RevwsCriterion::getCriteria($this->getLanguage()),
-      'preferences' => [
-        'allowEmptyReviews' => $set->allowEmptyReviews(),
-        'allowReviewWithoutCriteria' => $set->allowReviewWithoutCriteria(),
-        'allowGuestReviews' => $set->allowGuestReviews(),
-        'customerReviewsPerPage' => $set->getCustomerReviewsPerPage(),
-        'customerMaxRequests' => $set->getCustomerMaxRequests(),
-        'showSignInButton' => $set->showSignInButton(),
-        'placement' => $set->getPlacement(),
-        'displayCriteria' => $set->getDisplayCriteriaPreference()
-      ],
-      'gdpr' => [
-        'mode' => $set->getGDPRPreference(),
-        'active' => $gdpr->isEnabled(),
-        'text' => $gdpr->getConsentMessage($visitor)
-      ],
-      'canCreate' => $canCreate,
+      ];
+    }
+    return $this->staticData;
+  }
+
+  public function addEntity($type, $entityId) {
+    if ($type == 'product') {
+      $productId = (int)$entityId;
+      $this->extraProducts[$productId] = $productId;
+      if ($this->entities) {
+        $this->entities = $this->loadEntities($this->entities);
+      }
+    }
+  }
+
+  public function getReviews() {
+    $reviews = [];
+    foreach ($this->lists as $list) {
+      foreach ($list->getReviews() as $review) {
+        $id = (int)$review['id'];
+        if (! isset($reviews[$id])) {
+          $reviews[$id] = $review;
+        }
+      }
+    }
+    return $reviews;
+  }
+
+  public function getLists() {
+    $lists = [];
+    foreach ($this->lists as $key => $list) {
+      $data = $list->getData();
+      $copy = $data;
+      $copy['reviews'] = [];
+      foreach ($data['reviews'] as $review) {
+        $copy['reviews'][] = (int)$review['id'];
+      }
+      $lists[$key] = $copy;
+    }
+    return $lists;
+  }
+
+  public function getEntitites() {
+    if (is_null($this->entities)) {
+      $this->entities = $this->loadEntities();
+    }
+    return $this->entities;
+  }
+
+  private function loadEntities($entities=null) {
+    $products = is_null($entities) ? [] : $entities['products'];
+    foreach ($this->lists as $list) {
+      $products = $list->getProductEntities($products);
+    }
+    $visitorData = $this->getVisitorData();
+    foreach ($visitorData['productsToReview'] as $productId) {
+      $productId = (int)$productId;
+      if (! isset($products[$productId])) {
+        $products[$productId] = self::getProductData($productId, $this->getLanguage(), $this->getPermissions());
+      }
+    }
+    foreach ($this->extraProducts as $productId) {
+      $productId = (int)$productId;
+      if (! isset($products[$productId])) {
+        $products[$productId] = self::getProductData($productId, $this->getLanguage(), $this->getPermissions());
+      }
+    }
+    return [
+      'products' => $products
     ];
   }
+
 
   public function getShapeSettings() {
     return Shapes::getShape($this->getSettings()->getShape());
-  }
-
-  public function getProductReviews($productId) {
-    $set = $this->getSettings();
-    $perPage = $set->getReviewsPerPage();
-    $order = $set->getReviewOrder();
-    $reviews = RevwsReview::getByProduct($productId, $set, $this->getVisitor(), $perPage, 0, $order);
-    $reviews['reviews'] = RevwsReview::mapReviews($reviews['reviews'], $this->getPermissions());
-    return $reviews;
-  }
-
-  public function getCustomerReviews($customerId) {
-    $settings = $this->getSettings();
-    $perPage = $settings->getCustomerReviewsPerPage();
-    $reviews = RevwsReview::getByCustomer($customerId, $settings, $perPage, 0);
-    $reviews['reviews'] = RevwsReview::mapReviews($reviews['reviews'], $this->getPermissions());
-    return $reviews;
-  }
-
-  public function getProduct($productId) {
-    return [
-      $productId => self::getProductData($productId, $this->getLanguage(), $this->getPermissions())
-    ];
   }
 
   public static function getProductData($productId, $lang, Permissions $permissions) {
@@ -168,7 +249,13 @@ class FrontApp {
     $context = Context::getContext();
     $product = new Product($productId);
     if (! Validate::isLoadedObject($product)) {
-      throw new Exception("Product $productId not found");
+      return [
+        'id' => $productId,
+        'name' => '',
+        'url' => '',
+        'image' => '',
+        'criteria' => []
+      ];
     }
     $productName = $product->name[$lang];
     $link = $context->link;
@@ -184,8 +271,7 @@ class FrontApp {
       'name' => $productName,
       'url' => $product->getLink(),
       'image' => $image,
-      'criteria' => RevwsCriterion::getByProduct($productId),
-      'canCreate' => $permissions->canCreateReview($productId)
+      'criteria' => RevwsCriterion::getByProduct($productId)
     ];
   }
 

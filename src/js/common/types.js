@@ -62,14 +62,20 @@ export type ReviewType = {
   canVote: boolean,
   canEdit: boolean,
   canDelete: boolean,
-  canReport: boolean
+  canReport: boolean,
+  loading?: boolean
 }
+
+export type ListOrder = 'date' | 'usefulness' | 'author' | 'product' | 'title' | 'content' | 'grade' | 'id';
+export type ListOrderDirection = 'desc' | 'asc';
 
 export type ReviewListType = {
   pageSize: number,
   page: number,
   pages: number,
   total: number,
+  order: ListOrder,
+  orderDir: ListOrderDirection,
   reviews: Array<ReviewType>
 }
 
@@ -98,8 +104,7 @@ export type ProductInfoType = {
   name: string,
   url: string,
   image: string,
-  criteria: Array<number>,
-  canCreate: boolean
+  criteria: Array<number>
 }
 
 

@@ -1,18 +1,20 @@
 // @flow
 import React from 'react';
 import type { ReviewListType, ReviewType } from 'common/types';
-import type { SettingsType } from 'front/types';
+import type { EntitiesType, SettingsType } from 'front/types';
 import { slice } from 'ramda';
 import List from './list';
+import { getProduct } from 'front/utils/entities';
 import Paging from 'common/components/review-list-paging/review-list-paging';
 
 type Props = {
+  entities: EntitiesType,
   productsToReview: Array<number>,
   customerId: number,
   reviewList: ReviewListType,
   settings: SettingsType,
   loading: boolean,
-  loadPage: (number, number)=>void,
+  loadPage: (number)=>void,
   onEdit: (ReviewType)=>void,
   onCreate: (number)=>void,
   onDelete: (ReviewType)=>void,
@@ -32,11 +34,12 @@ class FrontAppCustomerReviewList extends React.PureComponent<Props> {
   }
 
   renderList = () => {
-    const { settings, reviewList, loading, onEdit, onDelete } = this.props;
+    const { settings, reviewList, loading, onEdit, onDelete, entities } = this.props;
     const isEmpty = reviewList.total === 0;
     return isEmpty ? this.renderEmptyState() : (
       <div>
         <List
+          entities={entities}
           settings={settings}
           reviewList={reviewList}
           loading={loading}
@@ -48,7 +51,7 @@ class FrontAppCustomerReviewList extends React.PureComponent<Props> {
   }
 
   renderPaging = () => {
-    const { customerId, loading, loadPage } = this.props;
+    const { loading, loadPage } = this.props;
     const { page, pages } = this.props.reviewList;
     if (pages > 1) {
       return (
@@ -57,7 +60,7 @@ class FrontAppCustomerReviewList extends React.PureComponent<Props> {
           page={page}
           pages={pages}
           loading={loading}
-          loadPage={page => loadPage(customerId, page)} />
+          loadPage={loadPage} />
       );
     }
     return null;
@@ -80,8 +83,8 @@ class FrontAppCustomerReviewList extends React.PureComponent<Props> {
   }
 
   renderRequest = (productId: number) => {
-    const { settings, onCreate } = this.props;
-    const product = settings.products[productId];
+    const { entities, onCreate } = this.props;
+    const product = getProduct(entities, productId);
     if (product) {
       return (
         <div key={productId} className='revws-review-request' onClick={e => onCreate(productId)}>

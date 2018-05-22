@@ -1,5 +1,6 @@
 // @flow
-import type { ReviewListType, ReviewType } from 'common/types';
+import type { ReviewType, ListOrder, ListOrderDirection } from 'common/types';
+import type { ListConditions, ListType, EntitiesType } from 'front/types';
 
 export type SetReviewAction = {
   type: 'SET_REVIEW',
@@ -70,21 +71,40 @@ export type SetSnackbarAction = {
   message: ?string
 }
 
-export type LoadPageAction = {
-  type: 'LOAD_PAGE',
-  entityType: 'product' | 'customer',
-  entityId: number,
-  page: number
+export type LoadListAction = {
+  type: 'LOAD_LIST',
+  listId: string,
+  conditions: ListConditions,
+  pageSize: number,
+  page: number,
+  order: ListOrder,
+  orderDir: ListOrderDirection
 }
+
+export type LoadListFailedAction = {
+  type: 'LOAD_LIST_FAILED',
+  listId: string
+};
+
+export type SetListAction = {
+  type: 'SET_LIST',
+  list: ListType
+};
 
 export type SetReviewsAction = {
   type: 'SET_REVIEWS',
-  reviews: ReviewListType
+  reviews: Array<ReviewType>
 }
 
 export type AgreeGDPRAction = {
   type: 'AGREE_GDPR',
   agreed: boolean
+}
+
+
+export type MergeEntitiesAction = {
+  type: 'MERGE_ENTITIES',
+  entities: EntitiesType
 }
 
 export type Action = (
@@ -102,7 +122,10 @@ export type Action = (
   TriggerReportReviewAction |
   TriggerVoteAction |
   SetSnackbarAction |
-  LoadPageAction |
+  LoadListAction |
+  LoadListFailedAction |
+  SetListAction |
   SetReviewsAction |
-  AgreeGDPRAction
+  AgreeGDPRAction |
+  MergeEntitiesAction
 );

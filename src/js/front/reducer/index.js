@@ -1,32 +1,31 @@
 // @flow
 
-import type { ReviewListType } from 'common/types';
-import type { SettingsType } from 'front/types';
+import type { SettingsType, ReviewsType, ListsType, VisitorType, EntitiesType } from 'front/types';
 import { combineReducers } from 'redux';
 import createEditReview from './edit-review';
-import createReviewList from './review-list';
 import snackbar from './snackbar';
 import deleteReview from './delete-review';
-import createProductsToReview from './products-to-review';
+import createVisitorReviews from './visitor-reviews';
+import createEntities from './entities';
 import createGDPR from './gdpr';
+import createLists from './lists';
+import createReviews from './reviews';
 
 const createReducer = (
   settings: SettingsType,
-  reviews: ReviewListType,
-  toReview: Array<number>
-) => {
-  const editReview = createEditReview(settings);
-  const reviewList = createReviewList(reviews);
-  const productsToReview = createProductsToReview(settings, toReview);
-  const gdpr = createGDPR(settings);
-  return combineReducers({
-    gdpr,
-    reviewList,
-    snackbar,
-    editReview,
-    deleteReview,
-    productsToReview
-  });
-};
+  visitor: VisitorType,
+  reviews: ReviewsType,
+  lists: ListsType,
+  entities: EntitiesType
+) => combineReducers({
+  entities: createEntities(entities),
+  reviews: createReviews(reviews),
+  lists: createLists(lists),
+  editReview: createEditReview(visitor),
+  visitorReviews: createVisitorReviews(visitor),
+  gdpr: createGDPR(settings),
+  snackbar,
+  deleteReview,
+});
 
 export default createReducer;

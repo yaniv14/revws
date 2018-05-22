@@ -10,11 +10,13 @@
 {/capture}
 
 <div id="myreviews">
-  <div id="revws-tab-content">
-    <div id="revws-app">
-      {include file="module:revws/views/templates/front/private_my_review_list.tpl" reviewsData=$reviewsData}
-    </div>
-  </div>
+  {include
+    file="module:revws/views/templates/front/private_my_review_list.tpl"
+    reviewsData=$reviewsData
+    reviewList=$reviewList
+    reviewEntities=$reviewEntities
+    visitor=$visitor
+  }
 </div>
 
 <nav>

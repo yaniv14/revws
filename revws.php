@@ -37,6 +37,7 @@ require_once __DIR__.'/classes/visitor.php';
 require_once __DIR__.'/classes/review-query.php';
 require_once __DIR__.'/classes/notifications.php';
 require_once __DIR__.'/classes/actor.php';
+require_once __DIR__.'/classes/review-list.php';
 require_once __DIR__.'/classes/front-app.php';
 require_once __DIR__.'/classes/integration/datakick.php';
 require_once __DIR__.'/classes/integration/krona.php';
@@ -51,6 +52,7 @@ class Revws extends Module {
   private $krona;
   private $csrfToken;
   private $gdpr;
+  private $frontApp;
 
   public function __construct() {
     $this->name = 'revws';
@@ -96,7 +98,8 @@ class Revws extends Module {
 
   public function registerHooks() {
     return $this->setupHooks([
-      'header',
+      'displayHeader',
+      'displayMobileHeader',
       'displayProductExtraContent',
       'displayProductListReviews',
       'displayProductAdditionalInfo',
@@ -122,8 +125,14 @@ class Revws extends Module {
     $id = $this->id;
     $install = [];
     $delete = [];
+    $aliases = Hook::getHookAliasList();
     foreach ($hooks as $hook) {
-      $install[strtolower($hook)] = $hook;
+      $key = strtolower($hook);
+      if (isset($aliases[$key])) {
+        $hook = $aliases[$key];
+        $key = strtolower($hook);
+      }
+      $install[$key] = $hook;
     }
     $sql = 'SELECT DISTINCT LOWER(h.name) AS `hook` FROM '._DB_PREFIX_.'hook h INNER JOIN '._DB_PREFIX_.'hook_module hm ON (h.id_hook = hm.id_hook) WHERE hm.id_module = '.(int)$id;
     foreach (Db::getInstance()->executeS($sql) as $row) {
@@ -275,13 +284,26 @@ class Revws extends Module {
     return $this->krona;
   }
 
-  private function assignReviewsData($productId) {
-    $frontApp = new \Revws\FrontApp($this);
-    $reviewsData = $frontApp->getData('product', $productId);
-    $this->context->smarty->assign('reviewsData', $reviewsData);
-    $this->context->smarty->assign('microdata', $this->getSettings()->emitRichSnippets());
-    Media::addJsDef([ 'revwsData' => $reviewsData ]);
-    return $reviewsData;
+  private function getProductReviewList() {
+    $productId = (int)(Tools::getValue('id_product'));
+    $frontApp = $this->getFrontApp();
+    $frontApp->addEntity('product', $productId);
+    if (isset($_GET['post_review']) && $this->getPermissions()->canCreateReview($productId)) {
+      $frontApp->addInitAction([
+        'type' => 'TRIGGER_CREATE_REVIEW',
+        'productId' => $productId
+      ]);
+    }
+    $list = $frontApp->addProductListWidget($productId);
+    $visitor = $this->getVisitor();
+    $settings = $this->getSettings();
+    $this->context->smarty->assign([
+      'reviewList' => $list->getData(),
+      'productId' => $productId,
+      'visitor' => $frontApp->getVisitorData(),
+      'reviewsData' => $frontApp->getStaticData()
+    ]);
+    return $list;
   }
 
   private function getShapeSettings() {
@@ -290,12 +312,10 @@ class Revws extends Module {
 
   public function hookdisplayProductExtraContent($params) {
     $set = $this->getSettings();
-    if ($set->getPlacement() === 'tab' && (Tools::getValue('ajax', 'false') == 'false')) {
-      $reviewsData = $this->assignReviewsData((int)(Tools::getValue('id_product')));
-      $emptyReviews = $reviewsData['reviews']['total'] == 0;
-      $canCreate = $reviewsData['canCreate'];
-      if ($emptyReviews && !$canCreate && $this->getVisitor()->isGuest() && $set->hideEmptyReviews()) {
-        return [];
+    if ($this->getSettings()->getPlacement() === 'tab') {
+      $list = $this->getProductReviewList();
+      if ($list->isEmpty() && $this->getVisitor()->isGuest() && $set->hideEmptyReviews()) {
+        return;
       }
       $content = $this->display(__FILE__, 'product_tab_content.tpl');
       $tab = new PrestaShop\PrestaShop\Core\Product\ProductExtraContent();
@@ -310,25 +330,31 @@ class Revws extends Module {
   public function hookDisplayFooterProduct() {
     $set = $this->getSettings();
     if ($set->getPlacement() === 'block') {
-      $reviewsData = $this->assignReviewsData((int)(Tools::getValue('id_product')));
-      $emptyReviews = $reviewsData['reviews']['total'] == 0;
-      $canCreate = $reviewsData['canCreate'];
-      if ($emptyReviews && !$canCreate && $this->getVisitor()->isGuest() && $set->hideEmptyReviews()) {
+      $list = $this->getProductReviewList();
+      if ($list->isEmpty() && $this->getVisitor()->isGuest() && $set->hideEmptyReviews()) {
         return;
       }
       return $this->display(__FILE__, 'product_footer.tpl');
     }
   }
 
+  public function hookDisplayHeader() {
+    $this->hookHeader();
+  }
+
+  public function hookDisplayMobileHeader() {
+    $this->hookHeader();
+  }
+
+  public function hookMobileHeader() {
+    $this->hookHeader();
+  }
+
   public function hookHeader() {
     $this->csrf();
     $controller = $this->context->controller;
     $this->includeCommonStyles($controller);
-    $productId = (int)(Tools::getValue('id_product'));
-    if ($productId) {
-      $reviewsData = $this->assignReviewsData($productId);
-      $this->context->controller->registerJavascript('revws-front', $this->getFrontBootstrapJS(), ['position' => 'bottom', 'priority' => 150]);
-    }
+    $this->getFrontApp();
   }
 
   public function hookDisplayProductAdditionalInfo($params) {
@@ -346,9 +372,10 @@ class Revws extends Module {
     $this->context->smarty->assign('productId', $productId);
     $this->context->smarty->assign('grade', $grade);
     $this->context->smarty->assign('reviewCount', $count);
+    $this->context->smarty->assign('hasReviewed', $this->getVisitor()->hasWrittenReview($productId));
     $this->context->smarty->assign('shape', $this->getShapeSettings());
     $this->context->smarty->assign('shapeSize', $set->getShapeSize());
-    $this->context->smarty->assign('canCreate', $this->getPermissions()->canCreateReview($productId));
+    $this->context->smarty->assign('canReview', $this->getPermissions()->canCreateReview($productId));
     $this->context->smarty->assign('isGuest', $this->getVisitor()->isGuest());
     $this->context->smarty->assign('loginLink', $this->getLoginUrl($productId));
     $this->context->smarty->assign('microdata', $set->emitRichSnippets());
@@ -360,6 +387,7 @@ class Revws extends Module {
     if ($settings->showOnProductListing()) {
       $productId = self::getProductId($params['product']);
       list($grade, $count) = RevwsReview::getAverageGrade($settings, $productId);
+      $this->context->smarty->assign('omitEmpty', $settings->productListNoReviewsBehavior() === 'omit');
       $this->context->smarty->assign('productId', $productId);
       $this->context->smarty->assign('grade', $grade);
       $this->context->smarty->assign('reviewCount', $count);
@@ -409,10 +437,6 @@ class Revws extends Module {
     $uri = rtrim($this->getPathUri(), '/');
     $rel = ltrim($relative, '/');
     return "$uri/$rel";
-  }
-
-  public function getFrontBootstrapJS() {
-    return '/modules/'.$this->name.'/views/js/front_bootstrap.js';
   }
 
   public static function getReviewUrl($context, $productId) {
@@ -539,10 +563,9 @@ class Revws extends Module {
     return $this->context->link->getModuleLink('revws', 'MyReviews');
   }
 
-  public function getLoginUrl($product) {
-    $back = $product ? $this->getProductReviewsLink($product) : $this->getMyReviewsUrl();
+  public function getLoginUrl() {
     return $this->context->link->getPageLink('authentication', true, null, [
-      'back' => $back
+      'back' => ''
     ]);
   }
 
@@ -603,7 +626,10 @@ class Revws extends Module {
         'list' => $set->getShapeSize(),
         'create' => $set->getShapeSize() * 5
       ],
-      'colors' => $colors
+      'colors' => $colors,
+      'productList' => [
+        'noReviews' => $set->productListNoReviewsBehavior()
+      ]
     ];
   }
 
@@ -624,6 +650,15 @@ class Revws extends Module {
     @file_put_contents($filename, $css);
   }
 
+  public function getFrontApp() {
+    if (! $this->frontApp) {
+      $this->frontApp = new \Revws\FrontApp($this);
+      $this->context->controller->registerJavascript('revws-front', $this->getPath('views/js/revws_bootstrap.js'), ['position' => 'bottom', 'priority' => 150]);
+      Media::addJsDef([ 'revwsData' => $this->frontApp ]);
+    }
+    return $this->frontApp;
+  }
+
   private static function getProductId($product) {
     if (is_array($product) && isset($product['id_product'])) {
       return (int)$product['id_product'];
@@ -636,5 +671,4 @@ class Revws extends Module {
     }
     return null;
   }
-
 }

@@ -1,17 +1,19 @@
 // @flow
 import React from 'react';
 import type { ReviewListType, ReviewType } from 'common/types';
-import type { SettingsType } from 'front/types';
+import type { SettingsType, VisitorType } from 'front/types';
 import List from './list';
 import Paging from 'common/components/review-list-paging/review-list-paging';
 
 type Props = {
-  canCreate: boolean,
+  hasReviewed: boolean,
+  canReview: boolean,
   productId: number,
   reviewList: ReviewListType,
+  visitor: VisitorType,
   settings: SettingsType,
   loading: boolean,
-  loadPage: (number, number)=>void,
+  loadPage: (number)=>void,
   onEdit: (ReviewType)=>void,
   onCreate: (number)=>void,
   onDelete: (ReviewType)=>void,
@@ -46,7 +48,7 @@ class FrontAppReviewList extends React.PureComponent<Props> {
   }
 
   renderPaging = () => {
-    const { productId, loading, loadPage } = this.props;
+    const { loading, loadPage } = this.props;
     const { page, pages } = this.props.reviewList;
     if (pages > 1) {
       return (
@@ -55,22 +57,24 @@ class FrontAppReviewList extends React.PureComponent<Props> {
           page={page}
           pages={pages}
           loading={loading}
-          loadPage={page => loadPage(productId, page)} />
+          loadPage={loadPage} />
       );
     }
     return null;
   }
 
   renderWriteReview = () => {
-    const { canCreate, settings } = this.props;
-    const { loginUrl } = settings;
-    if (canCreate) {
+    const { canReview, hasReviewed } = this.props;
+    if (hasReviewed) {
+      return;
+    }
+    if (canReview) {
       return this.renderCreateButton(__('Write your review!'));
     }
     if (this.showSignInButton()) {
       return (
         <div className="form-group">
-          <a className="btn btn-primary" href={loginUrl}>
+          <a className="btn btn-primary" href={this.getLoginUrl()}>
             {__('Sign in to write a review')}
           </a>
         </div>
@@ -79,15 +83,17 @@ class FrontAppReviewList extends React.PureComponent<Props> {
   }
 
   renderEmptyState = () => {
-    const { canCreate, settings } = this.props;
-    const { loginUrl } = settings;
-    if (canCreate) {
+    const { canReview, hasReviewed } = this.props;
+    if (hasReviewed) {
+      return;
+    }
+    if (canReview) {
       return this.renderCreateButton(__('Be the first to write a review!'));
     }
     if (this.showSignInButton()) {
       return (
         <div className="form-group">
-          <a className="btn btn-primary" href={loginUrl}>
+          <a className="btn btn-primary" href={this.getLoginUrl()}>
             {__('Sign in to write a review')}
           </a>
         </div>
@@ -112,9 +118,11 @@ class FrontAppReviewList extends React.PureComponent<Props> {
   }
 
   showSignInButton = () => {
-    const { preferences, visitor } = this.props.settings;
-    return visitor.type === 'guest' && preferences.showSignInButton;
+    const { settings, visitor } = this.props;
+    return visitor.type === 'guest' && settings.preferences.showSignInButton;
   }
+
+  getLoginUrl = () => this.props.settings.loginUrl + encodeURIComponent(window.location.href);
 }
 
 export default FrontAppReviewList;
