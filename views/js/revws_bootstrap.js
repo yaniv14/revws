@@ -1,4 +1,8 @@
 $(function() {
+  var revwsData = window.revwsData;
+  if (! revwsData) {
+    return;
+  }
   var tag = document.createElement('script');
   tag.src = window.revwsData.settings.appJsUrl;
   tag.setAttribute('defer', '');

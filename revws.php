@@ -356,10 +356,7 @@ class Revws extends Module {
     $controller = $this->context->controller;
     $this->includeCommonStyles($controller);
     $productId = (int)(Tools::getValue('id_product'));
-    if ($productId) {
-      $this->getFrontApp();
-      $controller->registerJavascript('revws-front', $this->getPath('views/js/revws_bootstrap.js'), ['position' => 'bottom', 'priority' => 1]);
-    }
+    $controller->registerJavascript('revws-front', $this->getPath('views/js/revws_bootstrap.js'), ['position' => 'bottom', 'priority' => 1]);
   }
 
   public function hookDisplayProductAdditionalInfo($params) {
