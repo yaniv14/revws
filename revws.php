@@ -100,6 +100,7 @@ class Revws extends Module {
     return $this->setupHooks([
       'displayHeader',
       'displayMobileHeader',
+      'displayBeforeBodyClosingTag',
       'displayProductExtraContent',
       'displayProductListReviews',
       'displayProductAdditionalInfo',
@@ -354,7 +355,11 @@ class Revws extends Module {
     $this->csrf();
     $controller = $this->context->controller;
     $this->includeCommonStyles($controller);
-    $this->getFrontApp();
+    $productId = (int)(Tools::getValue('id_product'));
+    if ($productId) {
+      $this->getFrontApp();
+      $controller->registerJavascript('revws-front', $this->getPath('views/js/revws_bootstrap.js'), ['position' => 'bottom', 'priority' => 1]);
+    }
   }
 
   public function hookDisplayProductAdditionalInfo($params) {
@@ -653,10 +658,14 @@ class Revws extends Module {
   public function getFrontApp() {
     if (! $this->frontApp) {
       $this->frontApp = new \Revws\FrontApp($this);
-      $this->context->controller->registerJavascript('revws-front', $this->getPath('views/js/revws_bootstrap.js'), ['position' => 'bottom', 'priority' => 150]);
-      Media::addJsDef([ 'revwsData' => $this->frontApp ]);
     }
     return $this->frontApp;
+  }
+
+  public function hookDisplayBeforeBodyClosingTag() {
+    if ($this->frontApp) {
+      echo '<script type="text/javascript">var revwsData='.json_encode($this->frontApp).';</script>';
+    }
   }
 
   private static function getProductId($product) {

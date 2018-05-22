@@ -1,4 +1,4 @@
-(function() {
+$(function() {
   var tag = document.createElement('script');
   tag.src = window.revwsData.settings.appJsUrl;
   tag.setAttribute('defer', '');
@@ -41,22 +41,20 @@
     }, 500);
   }
 
-  $(function() {
-    var s = window.location.search || '';
-    if (s.indexOf('show=reviews') > -1) {
-      scrollToReviews();
-    }
-    $("a[href='#idTabRevws']").click(function(e) {
-      e.preventDefault();
-      scrollToReviews();
-    });
-    $('[data-revws-create-trigger]').click(function(e) {
-      e.preventDefault();
-      var productId = parseInt($(this).data('revws-create-trigger'), 10);
-      window.revws({
-        type: 'TRIGGER_CREATE_REVIEW',
-        productId: productId
-      })
-    });
-  })
-})();
+  var s = window.location.search || '';
+  if (s.indexOf('show=reviews') > -1) {
+    scrollToReviews();
+  }
+  $("a[href='#idTabRevws']").click(function(e) {
+    e.preventDefault();
+    scrollToReviews();
+  });
+  $('[data-revws-create-trigger]').click(function(e) {
+    e.preventDefault();
+    var productId = parseInt($(this).data('revws-create-trigger'), 10);
+    window.revws({
+      type: 'TRIGGER_CREATE_REVIEW',
+      productId: productId
+    })
+  });
+});
