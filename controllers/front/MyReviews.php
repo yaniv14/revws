@@ -64,7 +64,7 @@ class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
   }
 
   private function selfLink() {
-    return $this->context->link->getModuleLink('revws', 'MyReviews', $this->getParams());
+    return $this->module->getUrl('MyReviews', $this->getParams());
   }
 
   private function getParams() {

@@ -1,4 +1,5 @@
-<a class="col-lg-4 col-md-6 col-sm-6 col-xs-12" id="revws-link" href="{$link->getModuleLink('revws', 'MyReviews', array(), true)|escape:'html':'UTF-8'}">
+<<<<<<< HEAD
+<a class="col-lg-4 col-md-6 col-sm-6 col-xs-12" id="revws-link" href="{$myReviewsUrl|escape:'html':'UTF-8'}">
   <span class="link-item">
     {if $iconClass}
     <i class="{$iconClass}"></i>
