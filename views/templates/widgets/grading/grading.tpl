@@ -22,17 +22,12 @@
 *
 *
 *}
-{strip}
-<div class="revws-review-single">
-  {include
-    file="module:revws/views/templates/hook/private_review_list_item.tpl"
-    review=$review
-    shape=$shape
-    criteria=$criteria
-    shopName=$shopName
-    linkToProduct=$linkToProduct
-    displayCriteria=$displayCriteria
-    microdata=false
-  }
+<div class="revws-grading revws-grading-{$type}">
+  {section name="i" start=0 loop=5 step=1}
+    <div class="revws-grade-wrap">
+      <svg class="revws-grade revws-grade-{if $grade <= $smarty.section.i.index}off{else}on{/if}" viewBox="{$shape.viewBox}">
+        <path d="{$shape.path}" />
+      </svg>
+    </div>
+  {/section}
 </div>
-{/strip}

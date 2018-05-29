@@ -166,13 +166,16 @@ class RevwsReview extends ObjectModel {
 
     // load reviews
     $reviews = [];
-    foreach ($conn->executeS($query->getSql()) as $item) {
-      $id = (int)$item['id_review'];
-      $reviews[$id] = self::mapDbData($item);
+    $res = $conn->executeS($query->getSql());
+    if ($res) {
+      foreach ($res as $item) {
+        $id = (int)$item['id_review'];
+        $reviews[$id] = self::mapDbData($item);
+      }
     }
-    $count = $conn->getRow('SELECT FOUND_ROWS() AS r')['r'];
+    $count = (int)$conn->getRow('SELECT FOUND_ROWS() AS r')['r'];
 
-    if ($count) {
+    if ($reviews) {
       $keys = implode(array_keys($reviews), ', ');
 
       // load ratings
@@ -424,8 +427,8 @@ class RevwsReview extends ObjectModel {
     $review->title = $json['title'];
     $review->content = $json['content'];
     $review->date_upd = new \DateTime();
-    $review->product = $json['product'];
-    $review->customer = $json['customer'];
+    $review->product = isset($json['product']) ? $json['product'] : null;
+    $review->customer = isset($json['customer']) ? $json['customer'] : null;
     $review->email = $json['email'];
     $review->reply = $json['reply'] ? str_replace('\\', '\\\\', $json['reply']) : null;
     $review->validated = !$json['underReview'];

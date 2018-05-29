@@ -22,23 +22,27 @@
 *
 *
 *}
+{assign "product" $reviewEntities.products[$review.productId]}
 {strip}
-{if $reviewList}
-<div class="revws-review-list">
-{foreach from=$reviewList.reviews item=review}
-  {include
-    file="module:revws/views/templates/hook/private_review_list_item.tpl"
-    review=$review
-    shopName=$reviewsData.shopName
-    shape=$reviewsData.theme.shape
-    criteria=$reviewsData.criteria
-    displayCriteria=$displayCriteria
-    microdata=$microdata
-  }
-{/foreach}
+<div class="revws-review-with-product">
+  <div>
+    <a href="{$product.url}">
+      <img src="{$product.image}" alt="{$product.name|escape:'html':'UTF-8'}"></img>
+    </a>
+  </div>
+  <div class="revws-review-wrapper">
+    <h2>
+      <a href="{$product.url}">{$product.name|escape:'html':'UTF-8'}</a>
+    </h2>
+    {include
+      file=revws::getWidgetTemplate('list/item')
+      review=$review
+      shopName=$shopName
+      criteria=$criteria
+      shape=$shape
+      displayCriteria=$displayCriteria
+      microdata=false
+    }
+  </div>
 </div>
-{if $reviewList.pages > 1}
-  {include file="module:revws/views/templates/hook/private_review_list_paging.tpl" }
-{/if}
-{/if}
 {/strip}

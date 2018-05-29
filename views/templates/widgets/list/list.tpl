@@ -14,13 +14,32 @@
 * @author    Petr Hucik <petr@getdatakick.com>
 * @copyright 2018 Petr Hucik
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*
+*
+*                             WARNING
+*
+*   do NOT MODIFY this template unless you modify javascript as well
+*
+*
 *}
-<div class="revws-grading revws-grading-{$type}">
-  {section name="i" start=0 loop=5 step=1}
-    <div class="revws-grade-wrap">
-      <svg class="revws-grade revws-grade-{if $grade <= $smarty.section.i.index}off{else}on{/if}" viewBox="{$shape.viewBox}">
-        <path d="{$shape.path}" />
-      </svg>
-    </div>
-  {/section}
+{assign "reviewStyleFile" revws::getWidgetTemplate("list/$reviewStyle")}
+{strip}
+{if $reviewList}
+<div class="revws-review-list">
+{foreach from=$reviewList.reviews item=review}
+  {include
+    file=$reviewStyleFile
+    review=$review
+    shopName=$shopName
+    shape=$shape
+    criteria=$criteria
+    displayCriteria=$displayCriteria
+    microdata=$microdata
+  }
+{/foreach}
 </div>
+{if $allowPaging && $reviewList.pages > 1}
+  {include file=revws::getWidgetTemplate('list/paging') }
+{/if}
+{/if}
+{/strip}

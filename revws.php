@@ -66,7 +66,7 @@ class Revws extends Module {
     $this->description = $this->l('Product Reviews module');
     $this->confirmUninstall = $this->l('Are you sure you want to uninstall the module? All its data will be lost!');
     $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
-    $this->controllers = array('MyReviews');
+    $this->controllers = array('MyReviews', 'AllReviews');
   }
 
   public function install($createTables=true) {
@@ -113,6 +113,7 @@ class Revws extends Module {
       'datakickExtend',
       'actionRegisterKronaAction',
       'displayRevwsReview',
+      'displayRevwsReviewList',
       'registerGDPRConsent',
       'actionDeleteGDPRCustomer',
       'actionExportGDPRData'
@@ -356,8 +357,16 @@ class Revws extends Module {
     $this->csrf();
     $controller = $this->context->controller;
     $this->includeCommonStyles($controller);
-    $productId = (int)(Tools::getValue('id_product'));
     $controller->registerJavascript('revws-front', $this->getPath('views/js/revws_bootstrap.js'), ['position' => 'bottom', 'priority' => 1]);
+  }
+
+  public function hookDisplayRightColumnProduct($params) {
+    $set = $this->getSettings();
+    if ($set->getAveragePlacement() == 'rightColumn') {
+      $productId = (int)(Tools::getValue('id_product'));
+      $this->setupAverageOnProductPage($productId);
+      return $this->display(__FILE__, 'product_extra.tpl');
+    }
   }
 
   public function hookDisplayProductAdditionalInfo($params) {
@@ -516,9 +525,93 @@ class Revws extends Module {
         $this->context->smarty->assign('displayCriteria', $displayCriteria);
         $this->context->smarty->assign('shopName', $shopName);
         $this->context->smarty->assign('linkToProduct', $this->context->link->getProductLink($review->id_product));
-        return $this->display(__FILE__, 'single_review.tpl');
+        return $this->display(__FILE__, 'display-revws-review.tpl');
       }
     }
+  }
+
+  public function hookDisplayRevwsReviewList($params) {
+    $displayReply = true;
+    if (isset($params['displayReply'])) {
+    }
+    if (isset($params['displayReply'])) {
+      $displayReply = !!$params['displayReply'];
+    }
+    $shopName = $displayReply ? Configuration::get('PS_SHOP_NAME') : null;
+
+    $displayCriteria = $this->getSettings()->getDisplayCriteriaPreference();
+    if (isset($params['displayCriteria'])) {
+      $displayCriteria = $params['displayCriteria'];
+    }
+
+    $reviewStyle = 'item';
+    if (isset($params['reviewStyle'])) {
+      $reviewStyle = $params['reviewStyle'];
+    }
+
+    $order = 'date';
+    if (isset($params['order'])) {
+      $order = $params['order'];
+    }
+
+    $orderDir = 'desc';
+    if (isset($params['orderDir'])) {
+      $orderDir = $params['orderDir'];
+    }
+
+    $pageSize = 5;
+    if (isset($params['pageSize'])) {
+      $pageSize = (int)$params['pageSize'];
+    }
+
+    $allowPaging = true;
+    if (isset($params['allowPaging'])) {
+      $allowPaging = !!$params['allowPaging'];
+    }
+
+    $widgetParams = [
+      'reviewStyle' => $reviewStyle,
+      'displayReply' => $displayReply,
+      'displayCriteria' => $displayCriteria,
+      'allowPaging' => $allowPaging
+    ];
+
+    $conditions = [];
+
+    if (isset($params['product'])) {
+      $product = (int)$params['product'];
+      if ($product > 0) {
+        $conditions['product'] = $product;
+      }
+    }
+
+    if (isset($params['customer'])) {
+      $customer = (int)$params['customer'];
+      if ($customer > 0) {
+        $conditions['customer'] = $customer;
+      }
+    }
+
+    if (isset($params['guest'])) {
+      $guest = (int)$params['guest'];
+      if ($guest > 0) {
+        $conditions['guest'] = $guest;
+      }
+    }
+
+    $frontApp = $this->getFrontApp();
+    $listId = "" . (isset($params['id']) ? $params['id'] : $frontApp->generateListId());
+    $list = $frontApp->addCustomListWidget($listId, $conditions, $widgetParams, $pageSize, $order, $orderDir);
+
+    $this->context->smarty->assign(array_merge([
+      'shopName' => $shopName,
+      'criteria' => RevwsCriterion::getCriteria($this->context->language->id),
+      'shape' => $this->getShapeSettings(),
+      'reviewList' => $list->getData(),
+      'reviewEntities' => $frontApp->getEntitites(),
+    ], $widgetParams));
+
+    return $this->display(__FILE__, 'display-revws-review-list.tpl');
   }
 
   public function hookModuleRoutes() {
@@ -553,6 +646,26 @@ class Revws extends Module {
 
   public static function getWidgetTemplate($name) {
     return "modules/revws/views/templates/widgets/$name.tpl";
+  }
+
+
+  public static function getPageUrl($list, $increment) {
+    $pages = (int)$list['pages'];
+    $page = (int)$list['page'] + (int)$increment + 1;
+    $current = $_SERVER['REQUEST_URI'];
+    if ($page >= 1 && $page <= $pages) {
+      $url = explode('?', $current);
+      $uri = $url[0];
+      $queryString = isset($url[1]) ? $url[1] : '';
+      parse_str($queryString, $queryStringParams);
+      $id = 'revws-' . $list['id'];
+      $pageSizeParam = "$id-page-size";
+      $pageParam = "$id-page";
+      $queryStringParams[$pageSizeParam] = (int)$list['pageSize'];
+      $queryStringParams[$pageParam] = $page;
+      return "$uri?" . http_build_query($queryStringParams);
+    }
+    return $current;
   }
 
   public function clearCache() {

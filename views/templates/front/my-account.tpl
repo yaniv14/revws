@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <a class="col-lg-4 col-md-6 col-sm-6 col-xs-12" id="revws-link" href="{$myReviewsUrl|escape:'html':'UTF-8'}">
   <span class="link-item">
     {if $iconClass}

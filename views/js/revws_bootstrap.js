@@ -1,6 +1,6 @@
-$(function() {
-  var revwsData = window.revwsData;
-  if (! revwsData) {
+(function revwsBootstrap() {
+  if (! window.revwsData) {
+    setTimeout(revwsBootstrap, 1000);
     return;
   }
   var tag = document.createElement('script');
@@ -40,9 +40,13 @@ $(function() {
     if (displayedInTab()) {
       openTab();
     }
-    $('html, body').animate({
-      scrollTop: $("#idTabRevws").offset().top - 80
-    }, 500);
+    var $elem = $("#idTabRevws");
+    if (! $elem.length) {
+      $elem = $(".revws-review-list");
+    }
+    if ($elem.length) {
+      $('html, body').animate({ scrollTop: $elem.offset().top - 80 }, 500);
+    }
   }
 
   var s = window.location.search || '';
@@ -61,4 +65,4 @@ $(function() {
       productId: productId
     })
   });
-});
+})();

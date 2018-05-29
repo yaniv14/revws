@@ -1,4 +1,13 @@
 {extends file='page.tpl'}
+{capture name='myReviews'}
+  {include
+    file=revws::getWidgetTemplate('my-reviews/my-reviews')
+    reviewsData=$reviewsData
+    reviewList=$reviewList
+    reviewEntities=$reviewEntities
+    visitor=$visitor
+  }
+{/capture}
 {block name='page_content'}
 {capture name=path}
   <a href="{$link->getPageLink('my-account', true)|escape:'html':'UTF-8'}">
@@ -11,7 +20,7 @@
 
 <div id="myreviews">
   {include
-    file="module:revws/views/templates/front/private_my_review_list.tpl"
+    file=revws::getWidgetTemplate('my-reviews/my-reviews')
     reviewsData=$reviewsData
     reviewList=$reviewList
     reviewEntities=$reviewEntities
