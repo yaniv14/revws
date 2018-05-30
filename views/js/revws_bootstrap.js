@@ -25,27 +25,52 @@
     }
   }
 
+  var warn = function(msg) {
+    if (console.warn) {
+      console.warn(msg);
+    }
+    return false;
+  }
+
   /**
    * this function will not work on all themes. Change it if you use tabs,
    * and reviews tab will not open automatically when you click on 'read reviews'
    */
   var openTab = function() {
-    $('*[id^="idTab"]').addClass('block_hidden_only_for_screen');
-    $('#idTabRevws').removeClass('block_hidden_only_for_screen');
-    $('a[href^="#idTab"]').removeClass('selected');
-    $('a[href="#idTabRevws"]').addClass('selected');
+    var $elem = $("#idTabRevws");
+    if (! $elem.length) {
+      return warn("Can't find #idTabRevws");
+    }
+
+    var id = $elem.parent().attr('id');
+    if (! id) {
+      return warn("Can't find id attribute of tab");
+    }
+
+    var $handle = $('*[href="#'+id+'"]');
+    if (! $handle.length) {
+      return warn("Can't find review tab "+id);
+    }
+    $handle.click();
   };
 
-  var scrollToReviews = function() {
-    if (displayedInTab()) {
-      openTab();
-    }
+  var doScroll = function() {
     var $elem = $("#idTabRevws");
     if (! $elem.length) {
       $elem = $(".revws-review-list");
     }
     if ($elem.length) {
-      $('html, body').animate({ scrollTop: $elem.offset().top - 80 }, 500);
+      var top = $elem.offset().top;
+      $('html, body').animate({ scrollTop: top - 80 }, 500);
+    }
+  }
+
+  var scrollToReviews = function() {
+    if (displayedInTab()) {
+      openTab();
+      setTimeout(doScroll, 150);
+    } else {
+      doScroll();
     }
   }
 
@@ -53,7 +78,7 @@
   if (s.indexOf('show=reviews') > -1) {
     scrollToReviews();
   }
-  $("a[href='#idTabRevws']").click(function(e) {
+  $('a[href="#idTabRevws"]').click(function(e) {
     e.preventDefault();
     scrollToReviews();
   });
