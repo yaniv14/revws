@@ -40,6 +40,7 @@ require_once __DIR__.'/classes/notifications.php';
 require_once __DIR__.'/classes/actor.php';
 require_once __DIR__.'/classes/review-list.php';
 require_once __DIR__.'/classes/front-app.php';
+require_once __DIR__.'/classes/backup.php';
 require_once __DIR__.'/classes/integration/datakick.php';
 require_once __DIR__.'/classes/integration/krona.php';
 
@@ -487,7 +488,9 @@ class Revws extends Module {
     if (isset($customer['email']) && Validate::isEmail($customer['email'])) {
       $email = $customer['email'];
       $id = isset($customer['id']) ? $customer['id'] : null;
-      return json_encode($this->getGDPR()->deleteData($id, $email));
+      $ret = json_encode($this->getGDPR()->deleteData($id, $email));
+      $this->clearCache();
+      return $ret;
     }
   }
 

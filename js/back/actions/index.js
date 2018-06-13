@@ -70,7 +70,8 @@ export type ApproveReviewAction = {
 
 export type DeleteReviewAction = {
   type: 'DELETE_REVIEW',
-  id: number
+  id: number,
+  permanently: boolean
 }
 
 export type UndeleteReviewAction = {
@@ -93,6 +94,11 @@ export type ReviewCreatedAction = {
   review: ReviewType
 }
 
+export type ReviewDeletedAction = {
+  type: 'REVIEW_DELETED',
+  id: number
+}
+
 export type MigrateDataAction = {
   type: 'MIGRATE_DATA',
   source: string,
@@ -112,7 +118,6 @@ export type CheckModuleVersionFailedAction = {
   type: 'CHECK_MODULE_VERSION_FAILED'
 }
 
-
 export type SetLatestVersionAction = {
   type: 'SET_LATEST_VERSION',
   version: string,
@@ -120,6 +125,9 @@ export type SetLatestVersionAction = {
   notes: string
 };
 
+export type ExportReviewsAction = {
+  type: 'EXPORT_REVIEWS'
+};
 
 export type Action = (
   CheckModuleVersionAction |
@@ -142,6 +150,8 @@ export type Action = (
   SaveReviewAction |
   ReviewUpdatedAction |
   ReviewCreatedAction |
+  ReviewDeletedAction |
   MigrateDataAction |
-  UploadYotpoCsvAction
+  UploadYotpoCsvAction |
+  ExportReviewsAction
 );

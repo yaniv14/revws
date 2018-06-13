@@ -22,11 +22,13 @@ export default {
 
   reviewUpdated: 'REVIEW_UPDATED',
   reviewCreated: 'REVIEW_CREATED',
+  reviewDeleted: 'REVIEW_DELETED',
   approveReview: 'APPROVE_REVIEW',
   deleteReview: 'DELETE_REVIEW',
   undeleteReview: 'UNDELETE_REVIEW',
   saveReview: 'SAVE_REVIEW',
 
   migrateData: 'MIGRATE_DATA',
-  uploadYotpoCsv: 'UPLOAD_YOTPO_CSV'
+  uploadYotpoCsv: 'UPLOAD_YOTPO_CSV',
+  exportReviews: 'EXPORT_REVIEWS'
 };
