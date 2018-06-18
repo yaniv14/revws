@@ -247,6 +247,9 @@ class Revws extends Module {
           $this->migrate($version);
         }
         $this->registerHooks();
+        if (is_callable(array($this, 'installControllers'))) {
+          $this->installControllers();
+        }
         $this->settings->setVersion($this->version);
       }
     }
@@ -256,11 +259,6 @@ class Revws extends Module {
   private function migrate($version) {
     if (version_compare($version, '1.0.9', '<')) {
       $this->executeSqlScript('update-1_0_9', false);
-    }
-    if (version_compare($version, '1.0.13', '<')) {
-      if (is_callable(array($this, 'installControllers'))) {
-        $this->installControllers();
-      }
     }
   }
 
@@ -777,7 +775,7 @@ class Revws extends Module {
   private function getCSSVersion($set) {
     static $version;
     if (is_null($version)) {
-      $data = 'CACHE_CONTROL';
+      $data = 'a64e2ef';
       $data .= '-' . $set->getVersion();
       $data .= '-' . json_encode($this->getCSSSettings($set));
       foreach (['css.tpl', 'css-extend.tpl'] as $tpl) {
