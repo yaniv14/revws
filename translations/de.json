@@ -173,7 +173,6 @@
     "Reviews has been exported": "Bewertungen wurden exportiert",
     "Reviews per page": "Bewertungen je Seite",
     "Revws - Product Reviews": "Revws - Produktbewertungen",
-    "Right column": "Rechte Spalte",
     "Save": "Speichern",
     "Save changes": "Änderungen speichern",
     "Search": "Suchen",
@@ -250,5 +249,6 @@
     "review author updates review": "Bewertende aktualisiert eine Bewertung",
     "review needs approval": "Bewertung muss genehmigt werden",
     "reviews reported as abusive must be re-approved": "Bewertungen, die als missbräuchlich gemeldet wurden, müssen erneut genehmigt werden",
-    "visitor creates new review": "Besucher schreibt eine neue Bewertung"
+    "visitor creates new review": "Besucher schreibt eine neue Bewertung",
+    "Right column": "Rechte Spalte"
 }

@@ -4,6 +4,7 @@
     "%s reviews out of %s has been imported. See javascript console for more info!": "Импортировано %s из %s отзывов. Подробности смотрите в javascript-консоли!",
     "(read %1$d reviews)": "(читать %1$d отзыв(а,ов))",
     "Actions": "Действия",
+    "Additional info": "Дополнительная информация",
     "Admin notifications": "Уведомления администратора",
     "All languages": "Все языки",
     "All reviews": "Все отзывы",
@@ -136,7 +137,6 @@
     "Preview": "Предварительный просмотр",
     "Product": "Товар",
     "Product Reviews module": "Модуль отзывов о товарах",
-    "Product buttons": "Кнопках товара",
     "Product comparison page": "Страница сравнения товаров",
     "Product detail page": "Страница информации о товаре",
     "Product listing page": "Страница списка товаров",
@@ -173,7 +173,6 @@
     "Reviews has been exported": "Экспорт отзывов завершен",
     "Reviews per page": "Отзывов на странице",
     "Revws - Product Reviews": "Revws - отзывы о товарах",
-    "Right column": "Правой колонке",
     "Save": "Сохранить",
     "Save changes": "Сохранить изменения",
     "Search": "Поиск",
@@ -250,5 +249,7 @@
     "review author updates review": "автор обновляет отзыв",
     "review needs approval": "отзыв должен быть утверждён",
     "reviews reported as abusive must be re-approved": "отзывы, на которые поступили жалобы, должны переутверждаться",
-    "visitor creates new review": "посетители  создают отзывы"
+    "visitor creates new review": "посетители  создают отзывы",
+    "Product buttons": "Кнопках товара",
+    "Right column": "Правой колонке"
 }
