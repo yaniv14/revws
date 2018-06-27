@@ -19,7 +19,6 @@ import { asObject } from 'common/utils/input';
 import Types from 'back/actions/types';
 import App from 'back/app';
 import moment from 'moment';
-import { editProductUrl } from 'back/utils/drilldown';
 
 const watchElementSize = (node, store) => {
   let lastWidth = null;
@@ -62,8 +61,6 @@ const syncHistory = history => store => next => action => {
 };
 
 window.startRevws = (init: any) => {
-  console.log(editProductUrl(init.data.drilldownTokens, 1));
-  return;
   setTranslation(asObject(init.translations));
   const content = document.getElementById('content');
   if (content) {
