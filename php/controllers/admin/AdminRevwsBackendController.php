@@ -531,9 +531,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
 
   private function getAdminLink($controller, $params) {
     $link = $this->context->link;
-    $idLang = $this->context->language->id;
-    $params = array_merge($params, ['token' => Tools::getAdminTokenLite($controller) ]);
-    return Dispatcher::getInstance()->createUrl($controller, $idLang, $params, false);
+    return $link->getAdminLink($controller, true, $params, $params);
   }
 
 }
