@@ -43,7 +43,7 @@ class RevwsEmailActionModuleFrontController extends ModuleFrontController {
       };
     } catch (Exception $e) {
       $this->context->smarty->assign('error', $e->getMessage());
-      $this->setTemplate('email-action-error.tpl');
+      $this->setTemplate('module:revws/views/templates/front/email-action-error.tpl');
     } finally {
       Notifications::getInstance()->process($this->module);
     }
@@ -63,7 +63,7 @@ class RevwsEmailActionModuleFrontController extends ModuleFrontController {
     if ($review->save()) {
       $this->context->smarty->assign('review', $review->toJSData($this->module->getPermissions()));
       $this->context->smarty->assign('approved', $approved);
-      $this->setTemplate('email-action-approval.tpl');
+      $this->setTemplate('module:revws/views/templates/front/email-action-approval.tpl');
     } else {
       throw new Exception('Failed to update review');
     }

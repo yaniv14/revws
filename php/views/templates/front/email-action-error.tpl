@@ -15,7 +15,10 @@
 * @copyright 2017-2018 Petr Hucik
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
+{extends file='page.tpl'}
+{block name='page_content'}
 <h2>Error</h2>
 <div>
   {$error}
 </div>
+{/block}

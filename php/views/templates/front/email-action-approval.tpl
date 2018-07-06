@@ -15,8 +15,11 @@
 * @copyright 2017-2018 Petr Hucik
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
+{extends file='page.tpl'}
+{block name='page_content'}
 {if $approved}
 <h4>Review {$review['id']} has been approved</h4>
 {else}
 <h4>Review {$review['id']} has been rejected</h4>
 {/if}
+{/block}
