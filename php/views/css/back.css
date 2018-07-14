@@ -1,3 +1,7 @@
 .app-content {
   padding: 100px 30px;
 }
+
+.page-sidebar:not(.page-sidebar-closed) #content {
+  margin-left: 210px !important;
+}
