@@ -6,7 +6,7 @@ const getUrl = (type: string, urls: DrilldownUrls, id: number) => {
   if (! url) {
     throw new Error('Invalid url type '+type);
   }
-  return decodeURI(url).replace('{ID}', `${id}`);
+  return decodeURI(url).replace('999', `${id}`);
 };
 
 export const editProductUrl = (urls: DrilldownUrls, productId: number) => getUrl('editProduct', urls, productId);

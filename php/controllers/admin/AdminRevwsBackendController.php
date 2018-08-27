@@ -543,10 +543,10 @@ class AdminRevwsBackendController extends ModuleAdminController {
 
   private function getDrilldownTokens() {
     return [
-      'editProduct' => $this->getAdminLink('AdminProducts', ['id_product' => '{ID}', 'updateproduct' => 1]),
-      'viewCustomer' => $this->getAdminLink('AdminCustomers', ['id_customer' => '{ID}', 'viewcustomer' => 1]),
-      'editCustomer' => $this->getAdminLink('AdminCustomers', ['id_customer' => '{ID}', 'updatecustomer' => 1]),
-      'viewOrder' => $this->getAdminLink('AdminOrders', ['id_order' => '{ID}', 'vieworder' => 1])
+      'editProduct' => $this->getAdminLink('AdminProducts', ['id_product' => 999, 'updateproduct' => 1]),
+      'viewCustomer' => $this->getAdminLink('AdminCustomers', ['id_customer' => 999, 'viewcustomer' => 1]),
+      'editCustomer' => $this->getAdminLink('AdminCustomers', ['id_customer' => 999, 'updatecustomer' => 1]),
+      'viewOrder' => $this->getAdminLink('AdminOrders', ['id_order' => 999, 'vieworder' => 1])
     ];
   }
 
