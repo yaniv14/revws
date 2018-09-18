@@ -65,6 +65,7 @@ class RevwsReview extends ObjectModel {
   public $reply;
 
   public $grades = [];
+  public $images;
   public $product;
   public $customer;
 
@@ -89,6 +90,7 @@ class RevwsReview extends ObjectModel {
   public function save($nullValues = false, $autoDate = true) {
     $ret = parent::save($nullValues, $autoDate);
     $ret &= $this->saveGrades();
+    $ret &= $this->saveImages();
     return $ret;
   }
 
@@ -136,6 +138,7 @@ class RevwsReview extends ObjectModel {
   public function delete() {
     $ret = parent::delete();
     $ret &= $this->deleteGrades();
+    $ret &= $this->deleteImages();
     $ret &= $this->deleteReactions();
     return $ret;
   }
@@ -159,6 +162,12 @@ class RevwsReview extends ObjectModel {
     $conn = Db::getInstance();
     $id = (int)$this->id;
     return $conn->delete('revws_review_reaction', "id_review = $id ");
+  }
+
+  public function deleteImages() {
+    $conn = Db::getInstance();
+    $id = (int)$this->id;
+    return $conn->delete('revws_review_image', "id_review = $id ");
   }
 
   public static function findReviews(Settings $settings, $options) {
@@ -187,6 +196,18 @@ class RevwsReview extends ObjectModel {
         $key = (int)$row['id_criterion'];
         $value = (int)$row['grade'];
         $reviews[$id]->grades[$key] = $value;
+      }
+
+      // load images
+      if ($settings->allowImages()) {
+        $reviews[$id]->images = [];
+        $image = _DB_PREFIX_ . 'revws_review_image';
+        $sql = "SELECT id_review, image FROM $image WHERE id_review IN ($keys) ORDER by id_review, pos";
+        foreach ($conn->executeS($sql) as $row) {
+          $id = (int)$row['id_review'];
+          $image = $row['image'];
+          $reviews[$id]->images[] = $image;
+        }
       }
     }
 
@@ -303,6 +324,43 @@ class RevwsReview extends ObjectModel {
     }
   }
 
+  public function loadImages(Settings $settings) {
+    if ($settings->allowImages()) {
+      $this->images = [];
+      $conn = Db::getInstance(_PS_USE_SQL_SLAVE_);
+      $image = _DB_PREFIX_ . 'revws_review_image';
+      $id = (int)$this->id;
+      if ($id) {
+        $query = "SELECT image FROM $image WHERE id_review = $id ORDER by pos";
+        $dbData = $conn->executeS($query);
+        if ($dbData) {
+          foreach ($dbData as $row) {
+            $this->images[] = $row['image'];
+          }
+        }
+      }
+    }
+  }
+
+  private function saveImages() {
+    $conn = Db::getInstance();
+    $id = (int)$this->id;
+    if ($id && is_array($this->images)) {
+      $this->deleteImages();
+      $pos = 1;
+      foreach ($this->images as $image) {
+        $conn->insert('revws_review_image',
+          [
+            'id_review' => $id,
+            'image' => $image,
+            'pos' => $pos++
+          ]
+        );
+      }
+    }
+    return true;
+  }
+
   public static function getAverageGrade(Settings $settings, $productId) {
     $query = new ReviewQuery($settings, [
       'product' => (int)$productId,
@@ -318,6 +376,7 @@ class RevwsReview extends ObjectModel {
 
   public function toJSData(Permissions $permissions) {
     $canEdit = $permissions->canEdit($this);
+    $images = is_array($this->images) ? $this->images : [];
     $ret = [
       'id' => (int)$this->id,
       'productId' => (int)$this->id_product,
@@ -328,6 +387,7 @@ class RevwsReview extends ObjectModel {
       'email' => $canEdit ? $this->email : '',
       'grades' => $this->grades,
       'grade' => round(Utils::calculateAverage($this->grades)),
+      'images' => $images,
       'title' => $this->title,
       'language' => (int)$this->id_lang,
       'content' => $this->content,
@@ -403,8 +463,18 @@ class RevwsReview extends ObjectModel {
     $review->verified_buyer = $visitor->hasPurchasedProduct($review->id_product);
     $grades = Tools::getValue('grades');
     if (is_array($grades)) {
-      foreach (Tools::getValue('grades') as $key => $value) {
+      foreach ($grades as $key => $value) {
         $review->grades[(int)$key] = (int)$value;
+      }
+    }
+    $images = Tools::getValue('images');
+    if (is_array($images)) {
+      $review->images = [];
+      $images = array_unique(array_values($images));
+      foreach ($images as $image) {
+        if (file_exists(_PS_ROOT_DIR_.$image)) {
+          $review->images[] = $image;
+        }
       }
     }
     return $review;

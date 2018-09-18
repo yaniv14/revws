@@ -63,6 +63,7 @@ export type ReviewType = {
   content: ?string,
   reply: ?string,
   grades: GradingType,
+  images: Array<string>,
   date: Date,
   underReview: boolean,
   deleted: boolean,
@@ -91,7 +92,8 @@ export type ReviewFormErrors = {
   email: ?string,
   displayName: ?string,
   title: ?string,
-  content: ?string
+  content: ?string,
+  images: ?string
 }
 
 export type CriterionType = {

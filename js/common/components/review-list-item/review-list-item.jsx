@@ -57,6 +57,15 @@ class ReviewListItem extends React.PureComponent<Props, State> {
     }
   }
 
+  componentDidMount() {
+    if (window.$) {
+      const $ = window.$;
+      if ($.fancybox) {
+        $('[data-revws-image-group="'+this.props.review.id+'"]').fancybox();
+      }
+    }
+  }
+
   render() {
     const { colors, shape, shapeSize, onReport, onEdit, onDelete, onVote, review, criteria, displayCriteria, dateFormat } = this.props;
     const { displayName, date, title, underReview, verifiedBuyer, content, canVote, canReport, grades, canEdit, canDelete, loading } = review;
@@ -118,6 +127,7 @@ class ReviewListItem extends React.PureComponent<Props, State> {
                 criteria={crits} />
             )}
           </div>
+          { this.renderImages() }
           <div className="revws-actions">
             {canVote && (
               <div className="revws-action revws-useful">
@@ -157,6 +167,26 @@ class ReviewListItem extends React.PureComponent<Props, State> {
       </div>
     );
   }
+
+  renderImages = () => {
+    const { images } = this.props.review;
+    if (!images || !images.length) {
+      return null;
+    }
+    return (
+      <div className="revws-images">
+        { images.map(this.renderImage) }
+      </div>
+    );
+  }
+
+  renderImage = (image: string) => (
+    <a key={image} data-revws-image-group={this.props.review.id} rel='1' href={image}>
+      <div className="revws-image">
+        <img src={getThumbnail(image)} />
+      </div>
+    </a>
+  );
 
   renderReplies = () => {
     const { displayReply, review, onSaveReply } = this.props;
@@ -262,12 +292,15 @@ class ReviewListItem extends React.PureComponent<Props, State> {
     }
     return ret;
   }
+
 }
 
 const getCriteriaToRender = (criteria, grades) => {
   const list = sortBy(prop('id'), values(criteria));
   return filter(crit => has(crit.id, grades), list);
 };
+
+const getThumbnail = (img: string) => img.replace(/.jpg$/, ".thumb.jpg");
 
 
 export default ReviewListItem;

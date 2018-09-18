@@ -36,7 +36,6 @@ class RevwsApiModuleFrontController extends ModuleFrontController {
     }
   }
 
-
   public function ajaxProcessCommand() {
     $moduleInstance = $this->module;
     $error = null;
@@ -71,6 +70,8 @@ class RevwsApiModuleFrontController extends ModuleFrontController {
         return $this->reportAbuse();
       case 'loadList':
         return $this->loadList();
+      case 'uploadImage':
+        return $this->uploadImage();
       default:
         throw new Exception("Unknown command $cmd");
     }
@@ -177,6 +178,56 @@ class RevwsApiModuleFrontController extends ModuleFrontController {
     ];
   }
 
+  private function uploadImage() {
+    $settings = $this->module->getSettings();
+    if (! $settings->allowImages() || !$settings->allowNewImages()) {
+      throw new Exception("Images are not allowed");
+    }
+
+    if (! isset($_FILES['file']['tmp_name'])) {
+      throw new Exception("File not provided");
+    }
+
+    $file = $_FILES['file'];
+
+    // validate image
+    $maxSize = ($settings->getMaxImageSize() * 1024 * 1024) + 1;
+    $error = ImageManager::validateUpload($file, $maxSize);
+    if ($error) {
+      throw new Exception($error);
+    }
+
+    // copy image to temp file
+    $tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS');
+    if (! move_uploaded_file($file['tmp_name'], $tmpName)) {
+      throw new Exception('An error occurred while copying image');
+    };
+
+    $file = md5_file($tmpName);
+    $ext = "jpg";
+    $target = "/data/images/$file.$ext";
+    $thumb = "/data/images/$file.thumb.$ext";
+    try {
+      $width = $settings->getImageWidth();
+      $height = $settings->getImageHeight();
+      if (!ImageManager::resize($tmpName, REVWS_MODULE_DIR . $target, $width, $height, $ext)) {
+        throw new Exception('An error occurred while uploading image');
+      }
+
+      $thumbWidth = $settings->getImageThumbnailWidth();
+      $thumbHeight = $settings->getImageThumbnailHeight();
+      if (!ImageManager::resize($tmpName, REVWS_MODULE_DIR . $thumb, $thumbWidth, $thumbHeight, $ext)) {
+        throw new Exception('An error occurred while uploading image');
+      }
+      unlink($tmpName);
+
+      return $this->module->getPath($target);
+    } catch (Exception $e) {
+      unlink($tmpName);
+      throw $e;
+    }
+  }
+
   private function getReviewPayload() {
     return RevwsReview::fromRequest($this->module->getVisitor());
   }
@@ -198,8 +249,10 @@ class RevwsApiModuleFrontController extends ModuleFrontController {
   }
 
   private function returnReview($id){
+    $settings = $this->module->getSettings();
     $review = new RevwsReview($id);
     $review->loadGrades();
+    $review->loadImages($settings);
     return $review->toJSData($this->module->getPermissions());
   }
 

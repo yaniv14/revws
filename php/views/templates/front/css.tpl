@@ -590,3 +590,58 @@ a .revws-grading {
   margin: 0;
   padding: 0;
 }
+
+.revws-review-form-image-text {
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  color: #999;
+  cursor: pointer;
+  font-weight: normal;
+}
+.revws-review-form-image-text:before {
+  content: "\f0c6";
+  font-size: 1.5rem;
+  font-family: FontAwesome;
+  padding-right: 5px;
+}
+
+.revws-review-form-image-text:hover {
+  color: #222;
+}
+
+
+.revws-images {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 10px -10px 0px -10px;
+}
+
+.revws-image {
+  margin: 10px;
+  width: {$cssSettings.images.thumbnail.width + 20}px;
+  height: {$cssSettings.images.thumbnail.height + 20}px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #f5f5f5;
+  transition: all 250ms linear;
+}
+
+.revws-image:hover {
+  border: 1px solid #222;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.revws-image img {
+  max-width: {$cssSettings.images.thumbnail.width}px;
+  max-height: {$cssSettings.images.thumbnail.height}px;
+  padding: 0px;
+}
+
+.revws-image svg {
+  stroke: #aaa;
+  fill: #aaa;
+}
