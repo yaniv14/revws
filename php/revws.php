@@ -365,7 +365,7 @@ class Revws extends Module {
     $this->csrf();
     $controller = $this->context->controller;
     $this->includeCommonStyles($controller);
-    $controller->registerJavascript('revws-front', $this->getPath('views/js/revws_bootstrap.js'), ['position' => 'bottom', 'priority' => 1]);
+    $controller->registerJavascript('revws-front', '/modules/revws/views/js/revws_bootstrap.js', ['position' => 'bottom', 'priority' => 1]);
     return $this->addCanonicalTags($this->context->controller->php_self);
   }
 
@@ -765,10 +765,10 @@ class Revws extends Module {
       $this->generateCSS($set, $filename);
       if (! file_exists($filename)) {
         // return fallback css file
-        return $this->getPath("views/css/fallback.css");
+        return "/modules/revws/views/css/fallback.css";
       }
     }
-    return $this->getPath($name);
+    return "/modules/revws/$name";
   }
 
   private function getCSSVersion($set) {
