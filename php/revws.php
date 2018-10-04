@@ -712,7 +712,7 @@ class Revws extends Module {
   public function includeCommonStyles($controller, $back=false) {
     $controller->addJquery();
     $controller->addJqueryPlugin('fancybox');
-    $file = $this->getCSSFile();
+    $file = $this->getCSSFile($back);
     if ($back) {
       $controller->addCSS($file, 'all');
     } else {
@@ -756,7 +756,7 @@ class Revws extends Module {
     return $this->gdpr;
   }
 
-  public function getCSSFile() {
+  public function getCSSFile($back) {
     $set = $this->getSettings();
     $version = $this->getCSSVersion($set);
     $name = "views/css/revws-$version.css";
@@ -768,7 +768,7 @@ class Revws extends Module {
         return "/modules/revws/views/css/fallback.css";
       }
     }
-    return "/modules/revws/$name";
+    return $back ? $this->getPath($name) : "/modules/revws/$name";
   }
 
   private function getCSSVersion($set) {
