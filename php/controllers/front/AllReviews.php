@@ -45,4 +45,14 @@ class RevwsAllReviewsModuleFrontController extends ModuleFrontController {
     ]);
     $this->setTemplate('module:revws/views/templates/front/all-reviews.tpl');
   }
+
+  public function getBreadcrumbLinks() {
+    $breadcrumb = parent::getBreadcrumbLinks();
+    $breadcrumb['links'][] = [
+      'title' => $this->l('Reviews'),
+      'url' => $this->module->getUrl('AllReviews')
+    ];
+    return $breadcrumb;
+  }
+
 }

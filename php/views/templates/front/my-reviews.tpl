@@ -15,17 +15,9 @@
 * @copyright 2017-2018 Petr Hucik
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
-{extends file='page.tpl'}
-{block name='page_content'}
-{capture name=path}
-  <a href="{$link->getPageLink('my-account', true)|escape:'html':'UTF-8'}">
-    {l s='My account' mod='revws'}
-  </a>
-  <span class="navigation_page">
-    {l s='My reviews' mod='revws'}
-  </span>
-{/capture}
+{extends file='customer/page.tpl'}
 
+{block name='page_content'}
 <div id="myreviews">
   {include
     file='modules/revws/views/templates/widgets/my-reviews/my-reviews.tpl'
@@ -35,12 +27,4 @@
     visitor=$visitor
   }
 </div>
-
-<nav>
-  <ul class="pager">
-    <li class="previous">
-      <a href="{$link->getPageLink('my-account', true)|escape:'html':'UTF-8'}" title="{l s='Back to your account' mod='revws'}">&larr; {l s='Back to your account' mod='revws'}</a>
-    </li>
-  </ul>
-</nav>
 {/block}

@@ -78,4 +78,14 @@ class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
     return $params;
   }
 
+  public function getBreadcrumbLinks() {
+    $breadcrumb = parent::getBreadcrumbLinks();
+    $breadcrumb['links'][] = $this->addMyAccountToBreadcrumb();
+    $breadcrumb['links'][] = [
+      'title' => $this->l('My reviews'),
+      'url' => $this->selfLink()
+    ];
+    return $breadcrumb;
+  }
+
 }
