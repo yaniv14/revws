@@ -4,8 +4,8 @@ import { map } from 'ramda';
 import type { EntitiesType, ReviewDisplayStyle } from 'front/types';
 import type { DisplayCriteriaType, GradingShapeType, ReviewType, ReviewListType, CriteriaType } from 'common/types';
 import ReviewListItem from 'common/components/review-list-item/review-list-item';
-import ReviewListItemWithProduct from 'common/components/review-list-item-with-product/review-list-item-with-product';
-import { getProduct } from 'front/utils/entities';
+import ReviewListItemWithEntity from 'common/components/review-list-item-with-entity/review-list-item-with-entity';
+import { getEntity } from 'front/utils/entities';
 import { CircularProgress } from 'material-ui/Progress';
 import Paging from 'common/components/review-list-paging/review-list-paging';
 
@@ -34,7 +34,7 @@ class ReviewList extends React.PureComponent<Props> {
 
   render() {
     const { reviewStyle, loading, reviewList } = this.props;
-    const func = reviewStyle === 'item' ? this.renderReview : this.renderReviewWithProduct;
+    const func = reviewStyle === 'item' ? this.renderReview : this.renderReviewWithEntity;
     return [
       <div key="list" className="revws-review-list">
         { map(func, reviewList.reviews) }
@@ -69,12 +69,12 @@ class ReviewList extends React.PureComponent<Props> {
     );
   }
 
-  renderReviewWithProduct = (review: ReviewType) => {
+  renderReviewWithEntity = (review: ReviewType) => {
     const { entities, shape, shapeSize, onReport, onVote, onEdit, onDelete, shopName, displayCriteria, criteria, dateFormat } = this.props;
-    const product = getProduct(entities, review.productId);
+    const entity = getEntity(entities, review.entityType, review.entityId);
     return (
-      <ReviewListItemWithProduct
-        product={product}
+      <ReviewListItemWithEntity
+        entity={entity}
         key={review.id}
         shape={shape}
         shapeSize={shapeSize}

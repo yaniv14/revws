@@ -16,11 +16,11 @@
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
 
-
 CREATE TABLE IF NOT EXISTS `PREFIX_revws_criterion` (
   `id_criterion`    INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `global`          TINYINT(1) NOT NULL DEFAULT 0,
   `active`          TINYINT(1) NOT NULL DEFAULT 1,
+  `entity_type`     VARCHAR(20) NOT NULL,
   PRIMARY KEY (`id_criterion`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=CHARSET_TYPE;
 
@@ -39,13 +39,14 @@ CREATE TABLE IF NOT EXISTS `PREFIX_revws_criterion_category` (
 
 CREATE TABLE IF NOT EXISTS `PREFIX_revws_criterion_product` (
   `id_criterion`    INT(11) UNSIGNED NOT NULL,
-  `id_product`     INT(11) UNSIGNED NOT NULL,
+  `id_product`      INT(11) UNSIGNED NOT NULL,
   PRIMARY KEY (`id_criterion`, `id_product`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=CHARSET_TYPE;
 
 CREATE TABLE IF NOT EXISTS `PREFIX_revws_review` (
   `id_review`        INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_product`       INT(11) UNSIGNED NOT NULL,
+  `entity_type`      VARCHAR(20) NOT NULL,
+  `id_entity`        INT(11) UNSIGNED NOT NULL,
   `id_customer`      INT(11) UNSIGNED NULL,
   `id_guest`         INT(11) UNSIGNED NULL,
   `id_lang`          INT(11) UNSIGNED NOT NULL,
@@ -60,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_revws_review` (
   `date_add`         DATETIME NOT NULL,
   `date_upd`         DATETIME NOT NULL,
   PRIMARY KEY (`id_review`),
-  KEY `id_product` (`id_product`),
+  KEY `entity_key` (`entity_type`, `id_entity`),
   KEY `id_customer` (`id_customer`),
   KEY `id_guest` (`id_guest`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=CHARSET_TYPE;
@@ -91,5 +92,5 @@ CREATE TABLE IF NOT EXISTS `PREFIX_revws_review_image` (
   KEY `id_review` (`id_review`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=CHARSET_TYPE;
 
-INSERT IGNORE INTO `PREFIX_revws_criterion`(`id_criterion`, `global`) VALUES (1, 1);
+INSERT IGNORE INTO `PREFIX_revws_criterion`(`id_criterion`, `global`, `entity_type`) VALUES (1, 1, 'product');
 INSERT IGNORE INTO `PREFIX_revws_criterion_lang`(`id_criterion`, `id_lang`, `label`) SELECT 1, `l`.`id_lang`, 'Quality' FROM `PREFIX_lang` `l`;

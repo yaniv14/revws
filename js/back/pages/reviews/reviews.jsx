@@ -5,13 +5,13 @@ import type { CriteriaType, ReviewType } from 'common/types';
 import type { SubPage } from 'back/routing/reviews';
 import React from 'react';
 import ReviewsTable from 'back/components/reviews-table';
-import CreateReview from 'back/components/create-review/create-review-dialog';
+import CreateReview from 'back/components/create-review';
 import MigrateData from './migrate-data';
 import { reviewsPage } from 'back/routing';
 import Section from 'back/components/section/section';
 import Button from 'material-ui/Button';
 
-type Props = {
+export type Props = {
   goTo: GoTo,
   data: GlobalDataType,
   settings: SettingsType,
@@ -53,12 +53,14 @@ class ReviewsPage extends React.PureComponent<Props> {
           filters={{
             deleted: false
           }}
+          entityTypes={data.entityTypes}
           drilldownUrls={data.drilldownUrls}
           uniqueId='allReviews' />
         { createReview && (
           <CreateReview
             shape={shape}
             shapeSize={shapeSize}
+            entityTypes={data.entityTypes}
             language={data.language}
             languages={data.languages}
             criteria={criteria}

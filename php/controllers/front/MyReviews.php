@@ -45,18 +45,19 @@ class RevwsMyReviewsModuleFrontController extends ModuleFrontController {
     $list = $frontApp->addMyReviewsWidget();
     $params = $this->getParams();
     $reviewProduct = (isset($params['review-product'])) ? (int)$params['review-product'] : null;
-    if ($reviewProduct && $permissions->canCreateReview($reviewProduct)) {
+    if ($reviewProduct && $permissions->canCreateReview('product', $reviewProduct)) {
       $frontApp->addEntity('product', $reviewProduct);
       $frontApp->addInitAction([
         'type' => 'TRIGGER_CREATE_REVIEW',
-        'productId' => $reviewProduct
+        'entityType' => 'product',
+        'entityId' => $reviewProduct
       ]);
     }
 
     $this->context->smarty->assign([
       'reviewList' => $list->getData(),
       'visitor' => $frontApp->getVisitorData(),
-      'reviewEntities' => $frontApp->getEntitites(),
+      'reviewEntities' => $frontApp->getEntities(),
       'reviewsData' => $frontApp->getStaticData()
     ]);
     $this->setTemplate('module:revws/views/templates/front/my-reviews.tpl');

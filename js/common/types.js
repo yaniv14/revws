@@ -1,5 +1,11 @@
 // @flow
 
+export type EntityType = 'product';
+
+export type EntityTypeDescription = {
+  type: EntityType,
+  name: string,
+}
 
 export type Tag = string | {
   tag: string,
@@ -52,8 +58,9 @@ export type GradingType = {
 export type ReviewType = {
   id: number,
   language: number,
-  productId: number,
-  product: ?string,
+  entityType: EntityType,
+  entityId: number,
+  entity: ?string,
   customer: ?string,
   authorType: 'guest' | 'customer',
   authorId: number,
@@ -75,7 +82,7 @@ export type ReviewType = {
   loading?: boolean
 }
 
-export type ListOrder = 'date' | 'usefulness' | 'author' | 'product' | 'title' | 'content' | 'grade' | 'id';
+export type ListOrder = 'date' | 'usefulness' | 'author' | 'entityType' | 'entity' | 'title' | 'content' | 'grade' | 'id';
 export type ListOrderDirection = 'desc' | 'asc';
 
 export type ReviewListType = {
@@ -109,14 +116,13 @@ export type EditStage = 'edit' | 'saving' | 'saved' | 'failed';
 
 export type NameFormatType = 'fullName' | 'firstName' | 'lastName' | 'initials' | 'initialLastName' | 'pseudonym' | 'custom';
 
-export type ProductInfoType = {
+export type EntityInfoType = {
   id: number,
   name: string,
-  url: string,
+  criteria: Array<number>,
   image: string,
-  criteria: Array<number>
+  url: string
 }
-
 
 export type CustomerInfoType = {
   id: number,

@@ -1,5 +1,5 @@
 // @flow
-import type { NameFormatType, LangString, LanguagesType, GradingShapeType, ShapeColorsType, DisplayCriteriaType } from 'common/types';
+import type { NameFormatType, LangString, LanguagesType, GradingShapeType, ShapeColorsType, DisplayCriteriaType, EntityType } from 'common/types';
 export type { RoutingState, GoTo } from 'back/routing';
 
 export type SettingsType = {
@@ -112,6 +112,9 @@ export type GlobalDataType = {
   platformVersion: string,
   environment: EnvironmentType,
   drilldownUrls: DrilldownUrls,
+  entityTypes: {
+    [ EntityType ]: string
+  },
   warnings?: Array<WarningMessageType>
 }
 
@@ -120,6 +123,7 @@ export type FullCriterion = {
   active: boolean,
   global: boolean,
   label: LangString,
+  entityType: EntityType,
   products: Array<number>,
   categories: Array<number>
 }
@@ -138,15 +142,36 @@ export type RouteDefinition<T> = {
   teardown?: (T, any)=>void
 };
 
-export type LoadOptions = 'all' | {
+export type LoadPagination = {
   pageSize: number,
   page: number
 }
 
-export type Load = {
-  record: string,
-  options: LoadOptions
+export type LoadCustomers = {
+  record: 'customers'
+}
+
+export type LoadCategories = {
+  record: 'categories'
+}
+
+export type LoadReviews = {
+  record: 'reviews',
+  pagination: LoadPagination
 };
+
+export type LoadEntities = {
+  record: 'entities',
+  entityType: EntityType
+}
+
+export type LoadEntity = {
+  record: 'entity',
+  entityType: EntityType,
+  entityId: number
+}
+
+export type Load = LoadCategories | LoadCustomers | LoadReviews | LoadEntities | LoadEntity;
 
 export type VersionCheck = {
   version: ?string,

@@ -1,13 +1,17 @@
 // @flow
 import type { Action } from 'front/actions';
 import type { VisitorType } from 'front/types';
-import type { ReviewType } from 'common/types';
+import type { EntityType, ReviewType } from 'common/types';
 import { append, contains, reject, equals } from 'ramda';
 import Types from 'front/actions/types';
 
-type State = {
-  toReview: Array<number>,
-  reviewed: Array<number>
+export type State = {
+  reviewed: {
+    [ EntityType ]: Array<number>
+  },
+  toReview: {
+    [ EntityType ]: Array<number>
+  }
 }
 
 
@@ -18,19 +22,29 @@ const isCustomerReview = (visitor: VisitorType, review: ReviewType) => {
   );
 };
 
-const remove = (review: ReviewType, list: Array<number>): Array<number> => reject(equals(review.productId), list);
-const add = (review: ReviewType, list: Array<number>): Array<number> => {
-  if (contains(review.productId, list)) {
+const remove = (entityId: number, list: Array<number>): Array<number> => reject(equals(entityId), list);
+
+const add = (entityId: number, list: Array<number>): Array<number> => {
+  if (contains(entityId, list)) {
     return list;
   }
-  return append(review.productId, list);
+  return append(entityId, list);
 };
 
-const updateLists = (visitor: VisitorType, review: ReviewType, state: State) => {
+const updateLists = (visitor: VisitorType, review: ReviewType, toAdd: boolean, state: State) => {
+  const { entityId, entityType } = review;
   if (isCustomerReview(visitor, review)) {
+    const toReviewFunc = toAdd ? remove : add;
+    const reviewedFunc = toAdd ? add : remove;
     return {
-      toReview: remove(review, state.toReview),
-      reviewed: add(review, state.reviewed)
+      toReview: {
+        ...state.toReview,
+        [ entityType ]: toReviewFunc(entityId, state.toReview[entityType]),
+      },
+      reviewed: {
+        ...state.reviewed,
+        [ entityType ]: reviewedFunc(entityId, state.reviewed[entityType])
+      }
     };
   }
   return state;
@@ -39,28 +53,25 @@ const updateLists = (visitor: VisitorType, review: ReviewType, state: State) => 
 export default (visitor: VisitorType) => {
   return (state?: State, action:Action): State => {
     state = state || {
-      toReview: visitor.productsToReview,
-      reviewed: visitor.reviewedProducts
+      toReview: visitor.toReview,
+      reviewed: visitor.reviewed
     };
 
     if (action.type === Types.setReviews) {
       const reviews: Array<ReviewType> = action.reviews;
       for (var i=0; i<reviews.length; i++) {
         const review = reviews[i];
-        state = updateLists(visitor, review, state);
+        state = updateLists(visitor, review, true, state);
       }
       return state;
     }
 
     if (action.type === Types.setReview) {
-      return updateLists(visitor, action.review, state);
+      return updateLists(visitor, action.review, true, state);
     }
 
     if (action.type === Types.reviewRemoved && isCustomerReview(visitor, action.review)) {
-      return {
-        toReview: add(action.review, state.toReview),
-        reviewed: remove(action.review, state.reviewed)
-      };
+      return updateLists(visitor, action.review, false, state);
     }
 
     return state;

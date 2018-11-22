@@ -43,6 +43,7 @@ require_once __DIR__.'/classes/front-app.php';
 require_once __DIR__.'/classes/backup.php';
 require_once __DIR__.'/classes/integration/datakick.php';
 require_once __DIR__.'/classes/integration/krona.php';
+require_once __DIR__.'/classes/migration-utils.php';
 
 require_once __DIR__.'/model/criterion.php';
 require_once __DIR__.'/model/review.php';
@@ -59,7 +60,7 @@ class Revws extends Module {
   public function __construct() {
     $this->name = 'revws';
     $this->tab = 'administration';
-    $this->version = '1.0.21';
+    $this->version = '1.0.22';
     $this->author = 'DataKick';
     $this->need_instance = 0;
     $this->bootstrap = true;
@@ -189,6 +190,7 @@ class Revws extends Module {
       if ($stmt) {
         try {
           if (!Db::getInstance()->execute($stmt)) {
+            die($stmt);
             if ($check) {
               return false;
             }
@@ -256,10 +258,14 @@ class Revws extends Module {
   }
 
   private function migrate($version) {
+    $utils = new \Revws\MigrationUtils(Db::getInstance());
     if (version_compare($version, '1.0.9', '<')) {
       $this->executeSqlScript('update-verified_buyer', false);
     }
     $this->executeSqlScript('update-review-image', false);
+    if (! $utils->columnExists(_DB_PREFIX_ . 'revws_criterion', 'entity_type')) {
+      $this->executeSqlScript('add-entity-type', false);
+    }
   }
 
   public function getVisitor() {
@@ -291,13 +297,14 @@ class Revws extends Module {
     $productId = (int)(Tools::getValue('id_product'));
     $frontApp = $this->getFrontApp();
     $frontApp->addEntity('product', $productId);
-    if (isset($_GET['post_review']) && $this->getPermissions()->canCreateReview($productId)) {
+    if (isset($_GET['post_review']) && $this->getPermissions()->canCreateReview('product', $productId)) {
       $frontApp->addInitAction([
         'type' => 'TRIGGER_CREATE_REVIEW',
-        'productId' => $productId
+        'entityType' => 'product',
+        'entityId' => $productId
       ]);
     }
-    $list = $frontApp->addProductListWidget($productId);
+    $list = $frontApp->addEntityListWidget('product', $productId);
     $visitor = $this->getVisitor();
     $settings = $this->getSettings();
     $this->context->smarty->assign([
@@ -405,10 +412,10 @@ class Revws extends Module {
     $this->context->smarty->assign('productId', $productId);
     $this->context->smarty->assign('grade', $grade);
     $this->context->smarty->assign('reviewCount', $count);
-    $this->context->smarty->assign('hasReviewed', $this->getVisitor()->hasWrittenReview($productId));
+    $this->context->smarty->assign('hasReviewed', $this->getVisitor()->hasWrittenReview('product', $productId));
     $this->context->smarty->assign('shape', $this->getShapeSettings());
     $this->context->smarty->assign('shapeSize', $set->getShapeSize());
-    $this->context->smarty->assign('canReview', $this->getPermissions()->canCreateReview($productId));
+    $this->context->smarty->assign('canReview', $this->getPermissions()->canCreateReview('product', $productId));
     $this->context->smarty->assign('isGuest', $this->getVisitor()->isGuest());
     $this->context->smarty->assign('loginLink', $this->getLoginUrl($productId));
     $this->context->smarty->assign('microdata', $set->emitRichSnippets());
@@ -536,7 +543,7 @@ class Revws extends Module {
         $this->context->smarty->assign('criteria', RevwsCriterion::getCriteria($this->context->language->id));
         $this->context->smarty->assign('displayCriteria', $displayCriteria);
         $this->context->smarty->assign('shopName', $shopName);
-        $this->context->smarty->assign('linkToProduct', $this->context->link->getProductLink($review->id_product));
+        $this->context->smarty->assign('linkToProduct', $this->context->link->getProductLink($review->id_entity));
         return $this->display(__FILE__, 'display-revws-review.tpl');
       }
     }
@@ -620,7 +627,7 @@ class Revws extends Module {
       'criteria' => RevwsCriterion::getCriteria($this->context->language->id),
       'shape' => $this->getShapeSettings(),
       'reviewList' => $list->getData(),
-      'reviewEntities' => $frontApp->getEntitites(),
+      'reviewEntities' => $frontApp->getEntities(),
     ], $widgetParams));
 
     return $this->display(__FILE__, 'display-revws-review-list.tpl');

@@ -4,7 +4,7 @@ import React from 'react';
 import type { DisplayCriteriaType, ReviewType, ReviewFormErrors, CriteriaType, GradingShapeType, LanguagesType } from 'common/types';
 import Button from 'material-ui/Button';
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'common/components/dialog';
-import EditReviewForm from './edit-review-form-controller';
+import EditReviewForm from './edit-review-form';
 import ViewReviewForm from './view-review-form';
 import { validateReview, hasErrors } from 'common/utils/validation';
 import { assoc, equals } from 'ramda';
@@ -19,6 +19,7 @@ type Props = {
   criteria: CriteriaType,
   dateFormat: string,
   displayCriteria: DisplayCriteriaType,
+  usedCriteria: ?Array<number>,
   shape: GradingShapeType,
   shapeSize: number,
   onSave: (ReviewType)=>void,
@@ -132,16 +133,16 @@ class EditReviewDialog extends React.PureComponent<Props, State> {
   }
 
   renderEditMode = (review: ReviewType, errors: ReviewFormErrors) => {
-    const { criteria, language, shape, languages } = this.props;
+    const { criteria, usedCriteria, language, shape, languages } = this.props;
     return (
       <EditReviewForm
         languages={languages}
-        productId={review.productId}
         review={review}
         onUpdateReview={this.onUpdateReview}
         shape={shape}
         language={language}
         criteria={criteria}
+        usedCriteria={usedCriteria}
         errors={errors} />
     );
   }
@@ -186,8 +187,6 @@ class EditReviewDialog extends React.PureComponent<Props, State> {
     onSave(assoc('underReview', false, review));
     onClose();
   }
-
-
 }
 
 export default EditReviewDialog;

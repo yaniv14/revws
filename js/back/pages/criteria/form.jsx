@@ -10,11 +10,13 @@ import { FormControlLabel } from 'material-ui/Form';
 import Button from 'material-ui/Button';
 import Dialog, { DialogActions, DialogContent, DialogTitle } from 'common/components/dialog';
 import Switch from 'material-ui/Switch';
-import styles from './criteria-section.less';
+import styles from './criteria.less';
 import Tabs from './tabs';
 
 type Props = {
   criterion: ?FullCriterion,
+  selectProducts: boolean,
+  selectCategories: boolean,
   products: ?KeyValue,
   categories: ?KeyValue,
   languages: LanguagesType,
@@ -46,40 +48,39 @@ class CriterionForm extends React.PureComponent<Props, State> {
     const { onClose } = this.props;
     const criterion = this.state.criterion;
     const isSame = equals(criterion, this.props.criterion);
-    return (
+    return criterion ? (
       <Dialog
         maxWidth='md'
         fullWidth={true}
-        open={!! criterion}
+        open={true}
         disableBackdropClick={true}
+        scroll='paper'
         onClose={onClose} >
-        {criterion ? (
-          <div>
-            <DialogTitle>{__('Edit criterion')}</DialogTitle>
-            <DialogContent>
-              { this.renderContent(criterion) }
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={onClose}>
-                {__('Cancel')}
-              </Button>
-              <Button onClick={this.submit} disabled={isSame} color="accent">
-                {__('Save')}
-              </Button>
-            </DialogActions>
-          </div>
-        ) : ''}
+        <DialogTitle>{__('Edit criterion')}</DialogTitle>
+        <DialogContent>
+          { this.renderContent(criterion) }
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>
+            {__('Cancel')}
+          </Button>
+          <Button onClick={this.submit} disabled={isSame} color="accent">
+            {__('Save')}
+          </Button>
+        </DialogActions>
       </Dialog>
-    );
+    ) : null;
   }
 
   renderContent(criterion: FullCriterion) {
-    const { languages } = this.props;
-    const { label, global } = criterion;
+    const { languages, selectProducts, selectCategories } = this.props;
+    const { label, global, active } = criterion;
+    const hasDimensions = selectProducts || selectCategories;
     return (
       <div>
         <div className={styles.space} />
         <div className={styles.group}>
+
           <MultiLangField
             label={__("Label")}
             values={label}
@@ -92,22 +93,35 @@ class CriterionForm extends React.PureComponent<Props, State> {
           <FormControlLabel
             control={(
               <Switch
-                checked={global}
-                onChange={(event, checked) => this.setCriterion({...criterion, global: checked})} />
+                checked={active}
+                onChange={(event, checked) => this.setCriterion({...criterion, active: checked})} />
             )}
-            label={__("Applies to entire catalog")} />
-          { !global && this.renderAssociations(criterion) }
+            label={__("Active")} />
+          {hasDimensions && (
+            <div>
+              <FormControlLabel
+                control={(
+                  <Switch
+                    checked={global}
+                    onChange={(event, checked) => this.setCriterion({...criterion, global: checked})} />
+                )}
+                label={__("Applies to entire catalog")} />
+              { this.renderAssociations(criterion) }
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
   renderAssociations = (criterion: FullCriterion) => {
-    const { products, categories } = this.props;
-    return (
+    const { selectProducts, selectCategories, products, categories } = this.props;
+    return (!criterion.global) && (
       <Tabs
-        products={products}
+        selectCategories={selectCategories}
+        selectProducts={selectProducts}
         categories={categories}
+        products={products}
         selectedProducts={criterion.products}
         selectedCategories={criterion.categories}
         onSetProducts={products => this.setCriterion({...criterion, products})}

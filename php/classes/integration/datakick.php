@@ -103,6 +103,15 @@ class DatakickIntegration {
           'mapping' => [ 'c' => 'active' ],
           'update' => true,
         ],
+        'entityType' => [
+          'type' => 'string',
+          'description' => 'entity type',
+          'mapping' => [ 'c' => 'entity_type' ],
+          'update' => true,
+          'values' => [
+            'product' => 'Product'
+          ]
+        ]
       ],
       'links' => [
         'products' => [
@@ -176,7 +185,8 @@ class DatakickIntegration {
           'join' => [
             'type' => 'LEFT',
             'conditions' => [
-              "pl.id_product = r.id_product",
+              "r.entity_type = 'product'",
+              "pl.id_product = r.id_entity",
               "<bind-param:language:pl.id_lang>"
             ]
           ]
@@ -200,11 +210,23 @@ class DatakickIntegration {
           ],
           'update' => false
         ],
-        'productId' => [
-          'type' => 'number',
-          'description' => 'ID product',
+        'entityType' => [
+          'type' => 'string',
+          'description' => 'entity type',
           'mapping' => [
-            'r' => 'id_product',
+            'r' => 'entity_type',
+          ],
+          'required' => true,
+          'update' => true,
+          'values' => [
+            'product' => 'Product'
+          ]
+        ],
+        'entityId' => [
+          'type' => 'number',
+          'description' => 'ID entity',
+          'mapping' => [
+            'r' => 'id_entity',
           ],
           'required' => true,
           'update' => true,
@@ -328,8 +350,11 @@ class DatakickIntegration {
             'description' => 'Product',
             'collection' => 'products',
             'type' => 'BELONGS_TO',
-            'sourceFields' => [ 'productId' ],
+            'sourceFields' => [ 'entityId' ],
             'targetFields' => [ 'id' ],
+            'conditions' => [
+              "<source:entityType> = 'product'"
+            ],
             'generateReverse' => [
               'id' => 'revwsReview',
               'description' => 'Reviews',

@@ -1,13 +1,13 @@
 // @flow
 
-import type { ReviewListType, GradingShapeType, ReviewType, CriteriaType, DisplayCriteriaType, LanguagesType, ListOrder, ListOrderDirection } from 'common/types';
-import type { DrilldownUrls, LoadOptions } from 'back/types';
+import type { EntityType, ReviewListType, GradingShapeType, ReviewType, CriteriaType, DisplayCriteriaType, LanguagesType, ListOrder, ListOrderDirection } from 'common/types';
+import type { DrilldownUrls, LoadPagination } from 'back/types';
 import type { Filters } from './types';
 import { notNil } from 'common/utils/ramda';
 import { prop, find, propEq, reject, merge, equals, has } from 'ramda';
 import React from 'react';
 import ReviewsTable from 'back/components/reviews-table/reviews-table';
-import EditReviewDialog from 'back/components/edit-review/edit-review-dialog';
+import EditReviewDialog from 'back/components/edit-review';
 
 export type InputProps = {
   shopName: string,
@@ -22,12 +22,15 @@ export type InputProps = {
   title: string,
   emptyLabel?: string,
   filters: Filters,
+  entityTypes: {
+    [ EntityType ]: string
+  },
   drilldownUrls: DrilldownUrls
 }
 
 type Props = InputProps & {
   data: any,
-  loadData: (string, LoadOptions) => void,
+  loadData: (string, LoadPagination) => void,
   approveReview: (id: number) => void,
   deleteReview: (id: number) => void,
   deletePermReview: (id: number) => void,
@@ -80,7 +83,7 @@ class Controller extends React.PureComponent<Props, State> {
     const { uniqueId, loadData } = this.props;
     const { order, orderDir, pageSize, page, filters } = state;
     loadData(uniqueId, merge(filters, {
-      productInfo: true,
+      entityInfo: true,
       customerInfo: true,
       allLanguages: true,
       order: {
@@ -118,7 +121,8 @@ class Controller extends React.PureComponent<Props, State> {
   renderList(list: ReviewListType) {
     const {
       languages, criteria, emptyLabel, title, shape, approveReview, deleteReview, undeleteReview,
-      language, shapeSize, shopName, displayCriteria, deletePermReview, drilldownUrls, dateFormat
+      language, shapeSize, shopName, displayCriteria, deletePermReview, drilldownUrls, dateFormat,
+      entityTypes
     } = this.props;
     const { edit, page, pageSize, order, orderDir, filters } = this.state;
     const { total, reviews } = list;
@@ -150,21 +154,24 @@ class Controller extends React.PureComponent<Props, State> {
           filters={filters}
           onChangeFilters={this.onChangeFilters}
           drilldownUrls={drilldownUrls}
+          entityTypes={entityTypes}
         />
-        <EditReviewDialog
-          shopName={shopName}
-          languages={languages}
-          language={language}
-          review={selectedReview}
-          allowEmptyReviews={true}
-          criteria={criteria}
-          shape={shape}
-          shapeSize={shapeSize}
-          dateFormat={dateFormat}
-          onSave={this.onSaveReview}
-          displayCriteria={displayCriteria}
-          onClose={() => this.setState({ edit: null })}
-        />
+        { selectedReview && (
+          <EditReviewDialog
+            shopName={shopName}
+            languages={languages}
+            language={language}
+            review={selectedReview}
+            allowEmptyReviews={true}
+            criteria={criteria}
+            shape={shape}
+            shapeSize={shapeSize}
+            dateFormat={dateFormat}
+            onSave={this.onSaveReview}
+            displayCriteria={displayCriteria}
+            onClose={() => this.setState({ edit: null })}
+          />
+        )}
       </div>
     );
   }

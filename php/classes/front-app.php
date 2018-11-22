@@ -52,19 +52,26 @@ class FrontApp implements JsonSerializable {
     $this->widgets[] = $widget;
   }
 
-  public function addProductListWidget($productId) {
-    $id = 'product-reviews';
+  public function addEntityListWidget($entityType, $entityId) {
+    $entityId = (int)$entityId;
+    $id = strtolower($entityType) . '-reviews';
     $list = $this->getList($id);
     if (! $list) {
       $settings = $this->getSettings();
-      $conditions = [ 'product' => (int)$productId ];
+      $conditions = [
+        'entity' => [
+            'type' => $entityType,
+            'id' => $entityId
+        ]
+      ];
       $pageSize = $this->getPageSize($id, $settings->getReviewsPerPage());
       $order = $settings->getReviewOrder();
       $page = $this->getPage($id, 0);
       $list = $this->addList(new ReviewList($this->module, $id, $conditions, $page, $pageSize, $order, 'desc'));
       $this->addWidget([
-        'type' => 'productList',
-        'productId' => $productId,
+        'type' => 'entityList',
+        'entityType' => $entityType,
+        'entityId' => $entityId,
         'listId' => $list->getId()
       ]);
     }
@@ -115,7 +122,7 @@ class FrontApp implements JsonSerializable {
       'visitor' => $this->getVisitorData(),
       'settings' => $this->getStaticData(),
       'reviews' => $this->getReviews(),
-      'entities' => $this->getEntitites(),
+      'entities' => $this->getEntities(),
       'lists' => $this->getLists(),
       'widgets' => $this->widgets,
       'translations' => $this->module->getFrontTranslations(),
@@ -136,8 +143,12 @@ class FrontApp implements JsonSerializable {
         'nameFormat' => $settings->getNamePreference(),
         'email' => $visitor->getEmail(),
         'language' => $visitor->getLanguage(),
-        'productsToReview' => $visitor->getProductsToReview(),
-        'reviewedProducts' => $visitor->getReviewedProducts(),
+        'toReview' => [
+          'product' => $visitor->getProductsToReview(),
+        ],
+        'reviewed' => [
+          'product' => $visitor->getReviewedProducts(),
+        ]
       ];
     }
     return $this->visitorData;
@@ -232,7 +243,7 @@ class FrontApp implements JsonSerializable {
     return isset($this->lists[$id]) ? $this->lists[$id] : null;
   }
 
-  public function getEntitites() {
+  public function getEntities() {
     if (is_null($this->entities)) {
       $this->entities = $this->loadEntities();
     }
@@ -245,7 +256,7 @@ class FrontApp implements JsonSerializable {
       $products = $list->getProductEntities($products);
     }
     $visitorData = $this->getVisitorData();
-    foreach ($visitorData['productsToReview'] as $productId) {
+    foreach ($visitorData['toReview']['product'] as $productId) {
       $productId = (int)$productId;
       if (! isset($products[$productId])) {
         $products[$productId] = self::getProductData($productId, $this->getLanguage());
@@ -258,7 +269,7 @@ class FrontApp implements JsonSerializable {
       }
     }
     return [
-      'products' => $products
+      'product' => $products
     ];
   }
 

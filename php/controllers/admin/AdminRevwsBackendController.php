@@ -79,6 +79,9 @@ class AdminRevwsBackendController extends ModuleAdminController {
             'psgdpr' => PrestashopGDRP::isAvailable()
           ],
           'drilldownUrls' => $this->getDrilldownTokens(),
+          'entityTypes' => [
+            'product' => $this->l('Product')
+          ],
           'warnings' => $this->getWarnings()
         ],
         'versionCheck' => $settings->getCheckModuleVersion(),
@@ -124,7 +127,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
   }
 
   private function dispatchCommand($cmd) {
-    $payload = json_decode($_POST['payload'], true);
+    $payload = isset($_POST['payload']) ? json_decode($_POST['payload'], true) : [];
     switch ($cmd) {
       case 'activate':
         return $this->activate($payload);
@@ -163,6 +166,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
   }
 
   private function importYotpo() {
+    Notifications::getInstance()->enableNotifications(false);
     $upload = Tools::fileAttachment('file', false);
     if (! (isset($_FILES['file']['name']) && !empty($_FILES['file']['name']) && !empty($_FILES['file']['tmp_name']))) {
       throw new Exception('No file');
@@ -176,7 +180,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
       }
     }
     $this->module->executeSqlScript('migrate-yotpo');
-    $products = $this->getProducts([]);
+    $products = $this->getEntities('product');
     $customers = $this->getCustomersByEmail();
     $errors = [];
     $success = 0;
@@ -199,7 +203,8 @@ class AdminRevwsBackendController extends ModuleAdminController {
       $review->content = $line[$index['review_content']];
       $review->date_upd = date('Y-m-d H:i:s');
       $review->date_add = (new \DateTime($line[$index['date']]))->format('Y-m-d H:i:s');
-      $review->id_product = $productId;
+      $review->entity_type = 'product';
+      $review->id_entity = $productId;
       $review->id_lang = (int)Context::getContext()->language->id;
       $review->validated = $line[$index['published']] === 'true';
       $review->email = $line[$index['email']];
@@ -210,7 +215,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
       $review->verified_buyer = 0;
       if (isset($customers[$review->email])) {
         $review->id_customer = (int)$customers[$review->email];
-        $review->verified_buyer = Visitor::hasCustomerPurchasedProduct($review->id_customer, $review->id_product);
+        $review->verified_buyer = Visitor::hasCustomerPurchasedProduct($review->id_customer, $productId);
       }
       $review->grades = [
         '1' => (int)$line[$index['review_score']]
@@ -294,32 +299,34 @@ class AdminRevwsBackendController extends ModuleAdminController {
     if (is_array($types)) {
       foreach ($types as $key => $def) {
         $rec = $def['record'];
-        $options = $def['options'];
-        if ($rec == 'products') {
-          $ret[$key] = $this->getProducts($options);
+        if ($rec == 'entities') {
+          $ret[$key] = $this->getEntities($def['entityType']);
         }
         if ($rec == 'categories') {
-          $ret[$key] = $this->getCategories($options);
+          $ret[$key] = $this->getCategories();
         }
         if ($rec == 'reviews') {
-          $ret[$key] = $this->getReviews($options);
+          $ret[$key] = $this->getReviews($def['pagination']);
         }
-        if ($rec == 'productInfo') {
-          $ret[$key] = $this->getProductInfo($options);
+        if ($rec == 'entity') {
+          $ret[$key] = $this->getEntityInfo($def['entityType'], $def['entityId']);
         }
         if ($rec == 'customers') {
-          $ret[$key] = $this->getCustomers($options);
+          $ret[$key] = $this->getCustomers();
         }
       }
     }
     return $ret;;
   }
 
-  private function getProducts($options) {
-    return Utils::mapKeyValue('id_product', 'name', Product::getSimpleProducts($this->context->language->id));
+  private function getEntities($entityType) {
+    if ($entityType === 'product') {
+      return Utils::mapKeyValue('id_product', 'name', Product::getSimpleProducts($this->context->language->id));
+    }
+    throw new Exception("Unknown entity type $entityType");
   }
 
-  private function getCustomers($options) {
+  private function getCustomers() {
     $loadPseudonyms = $this->module->getSettings()->usePseudonym();
     $pseudonyms = $loadPseudonyms ? $this->module->getKrona()->getAllPseudonyms() : [];
     return Utils::mapKeyValue('id_customer', function($data) use ($pseudonyms) {
@@ -339,20 +346,23 @@ class AdminRevwsBackendController extends ModuleAdminController {
     return Utils::mapKeyValue('email', 'id_customer', Customer::getCustomers(true));
   }
 
-  private function getProductInfo($options) {
-    $id = (int)$options['id'];
-    $lang = $this->context->language->id;
-    return FrontApp::getProductData($id, $lang);
+  private function getEntityInfo($entityType, $id) {
+    if ($entityType === 'product') {
+      $id = (int)$id;
+      $lang = $this->context->language->id;
+      return FrontApp::getProductData($id, $lang);
+    }
+    throw new Exception("Unknown entity type $entityType");
   }
 
-  private function getCategories($options) {
+  private function getCategories() {
     $lang = $this->context->language->id;
     return Utils::mapKeyValue('id_category', 'name', Category::getSimpleCategories($lang));
   }
 
-  private function getReviews($options) {
+  private function getReviews($pagination) {
     $permissions = $this->module->getPermissions();
-    $ret = RevwsReview::findReviews($this->module->getSettings(), $options);
+    $ret = RevwsReview::findReviews($this->module->getSettings(), $pagination);
     $ret['reviews'] = RevwsReview::mapReviews($ret['reviews'], $permissions);
     return $ret;
   }
@@ -395,6 +405,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
   }
 
   private function migrateData($data) {
+    Notifications::getInstance()->enableNotifications(false);
     $source = isset($data['source']) ? $data['source'] : 'invalid';
     switch ($source) {
       case 'productcomments':
@@ -441,7 +452,7 @@ class AdminRevwsBackendController extends ModuleAdminController {
     $records = RevwsReview::findReviews($this->module->getSettings(), [
       'id' => $id,
       'allLanguages' => true,
-      'productInfo' => true,
+      'entityInfo' => true,
       'customerInfo' => true,
     ]);
     if (isset($records['reviews'][$id])) {

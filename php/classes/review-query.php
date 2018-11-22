@@ -53,7 +53,8 @@ class ReviewQuery {
       'id_review' => 'r.id_review',
       'id_guest' => 'r.id_guest',
       'id_customer' => 'r.id_customer',
-      'id_product' => 'r.id_product',
+      'entity_type' => 'r.entity_type',
+      'id_entity' => 'r.id_entity',
       'id_lang' => 'r.id_lang',
       'display_name' => 'r.display_name',
       'email' => 'r.email',
@@ -66,8 +67,8 @@ class ReviewQuery {
       'deleted' => 'r.deleted',
       'verified_buyer' => 'r.verified_buyer'
     ];
-    if ($this->includeProductInfo()) {
-      $fields['product'] = 'pl.name';
+    if ($this->includeEntityInfo()) {
+      $fields['entity'] = 'pl.name';
     }
     if ($this->includeCustomerInfo()) {
       $fields['customer'] = "CONCAT(cust.firstname,' ', cust.lastname)";
@@ -85,10 +86,10 @@ class ReviewQuery {
     $shop = $this->getShop();
     $lang = $this->getLanguage();
     if ($this->hasOption('shop')) {
-      $from .= ' INNER JOIN '. _DB_PREFIX_ ."product_shop ps ON (r.id_product = ps.id_product AND ps.id_shop = $shop)";
+      $from .= ' LEFT JOIN '. _DB_PREFIX_ ."product_shop ps ON (r.entity_type = 'product' AND r.id_entity = ps.id_product AND ps.id_shop = $shop)";
     }
-    if ($this->includeProductInfo()) {
-      $from .= ' LEFT JOIN ' . _DB_PREFIX_ . "product_lang pl ON (r.id_product = pl.id_product AND pl.id_shop = $shop AND pl.id_lang = $lang)";
+    if ($this->includeEntityInfo()) {
+      $from .= ' LEFT JOIN ' . _DB_PREFIX_ . "product_lang pl ON (r.entity_type = 'product' AND r.id_entity = pl.id_product AND pl.id_shop = $shop AND pl.id_lang = $lang)";
     }
     if ($this->includeCustomerInfo()) {
       $from .= ' LEFT JOIN ' . _DB_PREFIX_ . 'customer cust ON (r.id_customer = cust.id_customer)';
@@ -101,8 +102,21 @@ class ReviewQuery {
     if ($this->hasOption('id')) {
       $cond[] = "r.id_review = " . $this->getInt('id');
     }
+    if ($this->hasOption('shop')) {
+      $cond[] = "ps.id_shop IS NOT NULL";
+    }
     if ($this->hasOption('product')) {
-      $cond[] = "r.id_product = " . $this->getInt('product');
+      $cond[] = "r.entity_type = 'product' AND r.id_entity = " . $this->getInt('product');
+    }
+    if ($this->hasOption('entityType')) {
+      $entityType = psql($this->getOption('entityType'));
+      $cond[] = "r.entity_type = '$entityType'";
+    }
+    if ($this->hasOption('entity')) {
+      $entity = $this->getOption('entity');
+      $entityType = psql($entity['type']);
+      $entityId = (int)$entity['id'];
+      $cond[] = "r.entity_type = '$entityType' AND r.id_entity = $entityId";
     }
     if ($this->hasOption('customer')) {
       $cond[] = "r.id_customer = " . $this->getInt('customer');
@@ -176,7 +190,9 @@ class ReviewQuery {
         return $this->getUsefulnessSubselect();
       case 'author':
         return $this->includeCustomerInfo() ? "(CASE WHEN r.id_customer != 0 THEN TRIM(CONCAT(cust.firstname,' ', cust.lastname)) ELSE r.display_name END)" : 'r.display_name';
-      case 'product':
+      case 'entityType':
+        return 'r.entity_type';
+      case 'entity':
         return 'pl.name';
       case 'title':
         return 'r.title';
@@ -228,8 +244,14 @@ class ReviewQuery {
     return -1;
   }
 
-  private function includeProductInfo() {
-    return $this->getOption('productInfo', false);
+  private function includeEntityInfo() {
+    if ($this->getOption('entityInfo', false)) {
+      return true;
+    }
+    if ($this->getOption('productInfo', false)) {
+      return true;
+    }
+    return $this->getOrderField() === 'entity';
   }
 
   private function includeCustomerInfo() {

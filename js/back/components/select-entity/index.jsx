@@ -2,12 +2,13 @@
 import type { ComponentType } from 'react';
 import { connect } from 'react-redux';
 import { mapObject } from 'common/utils/redux';
-import { getProducts } from 'back/selectors/data';
+import { getEntities } from 'back/selectors/data';
 import { loadData } from 'back/actions/creators';
-import SelectProduct from './select-product';
+import SelectEntity from './select-entity';
+import type { InputProps } from './select-entity';
 
 const mapStateToProps = mapObject({
-  products: getProducts,
+  entities: getEntities,
 });
 
 const actions = {
@@ -15,8 +16,6 @@ const actions = {
 };
 
 const connectRedux = connect(mapStateToProps, actions);
-const ConnectedComponent: ComponentType<{
-  onSelect: (number) => void,
-}> = connectRedux(SelectProduct);
+const ConnectedComponent: ComponentType<InputProps> = connectRedux(SelectEntity);
 
 export default ConnectedComponent;

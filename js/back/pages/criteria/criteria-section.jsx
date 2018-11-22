@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
-import type { LanguagesType, KeyValue } from 'common/types';
+import type { EntityType, LanguagesType, KeyValue } from 'common/types';
 import type { Load, FullCriteria, FullCriterion } from 'back/types';
-import { map, always, values, sortBy, prop } from 'ramda';
+import { keys, map, always, values, sortBy, prop } from 'ramda';
 import List, {
   ListItem,
   ListItemAvatar,
@@ -17,10 +17,13 @@ import DeleteIcon from 'material-ui-icons/Delete';
 import AddAvatar from 'common/components/add-avatar/add-avatar';
 import ConfirmDelete from 'common/components/confirm-delete/confirm-delete';
 import Form from './form';
-import styles from './criteria-section.less';
+import styles from './criteria.less';
 
 type Props = {
+  entityType: EntityType,
   criteria: FullCriteria,
+  selectProducts: boolean,
+  selectCategories: boolean,
   products: ?KeyValue,
   categories: ?KeyValue,
   language: number,
@@ -46,25 +49,28 @@ class CriteriaSection extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    const { categories, products, loadData } = this.props;
-    if (! categories || !products) {
-      loadData({
-        products: {
-          record: 'products',
-          options: 'all'
-        },
-        categories: {
-          record: 'categories',
-          options: 'all'
-        }
-      });
+    const { selectProducts, products, selectCategories, categories, loadData } = this.props;
+    const load = {};
+    if (selectProducts && !products) {
+      load.products = {
+        record: 'entities',
+        entityType: 'product'
+      };
+    }
+    if (selectCategories && !categories) {
+      load.categories = {
+        record: 'categories',
+      };
+    }
+    if (keys(load).length) {
+      loadData(load);
     }
   }
 
   render() {
     const criteria = sortBy(prop('id'), values(this.props.criteria));
     return (
-      <div className={styles.root}>
+      <div className={styles.section}>
         <List>
           { criteria.map(this.renderCriterion) }
           <ListItem button onClick={e => this.setEdit(-1)}>
@@ -90,7 +96,7 @@ class CriteriaSection extends React.PureComponent<Props, State> {
 
   renderCriterion = (crit: FullCriterion) => {
     const language = this.props.language;
-    const { id, label, active, global, categories, products } = crit;
+    const { id, label, active, global, categories, products, entityType } = crit;
     return (
       <ListItem key={id} button onClick={e => this.setEdit(id)}>
         <ListItemAvatar>
@@ -100,7 +106,7 @@ class CriteriaSection extends React.PureComponent<Props, State> {
         </ListItemAvatar>
         <ListItemText
           primary={label[language]}
-          secondary={describeCriterion(active, global, categories, products)}
+          secondary={describeCriterion(active, entityType, global, categories, products)}
         />
         <ListItemSecondaryAction>
           <IconButton onClick={() => this.triggerDeleteCriterion(id)}>
@@ -112,13 +118,15 @@ class CriteriaSection extends React.PureComponent<Props, State> {
   }
 
   renderEditForm = () => {
-    const { onSaveCriterion, languages, categories, products } = this.props;
+    const { onSaveCriterion, languages, selectProducts, products, selectCategories, categories } = this.props;
     const edit = this.state.edit;
     const criterion = this.getCriterion(edit);
     return (
       <Form
-        categories={categories}
+        selectProducts={selectProducts}
         products={products}
+        selectCategories={selectCategories}
+        categories={categories}
         criterion={criterion}
         languages={languages}
         onClose={this.closeEditForm}
@@ -131,13 +139,14 @@ class CriteriaSection extends React.PureComponent<Props, State> {
   }
 
   getCriterion = (id: ?number): ?FullCriterion => {
-    const { criteria, languages } = this.props;
+    const { entityType, criteria, languages } = this.props;
     if (! id) {
       return null;
     }
     if (id === -1) {
       return {
         id,
+        entityType,
         global: true,
         active: true,
         label: map(always(''), languages),
@@ -161,32 +170,35 @@ class CriteriaSection extends React.PureComponent<Props, State> {
   }
 }
 
-const describeCriterion = (active, global, categories, products) => {
+const describeCriterion = (active, entityType, global, categories, products) => {
   if (! active) {
     return (
       <span>
         <b>
           {__('Disabled criterion')}
+          &nbsp;
         </b>
-        { describeCriterion(true, global, categories, products)}
+        { describeCriterion(true, entityType, global, categories, products)}
       </span>
     );
   }
-  if (global) {
-    return __('Applies to your entire catalog');
+  if (entityType === 'product') {
+    if (global) {
+      return __('Applies to your entire catalog');
+    }
+    const ccnt = count(categories);
+    const pcnt = count(products);
+    if (ccnt && pcnt) {
+      return __('Applies to %s categories and %s products', ccnt, pcnt);
+    }
+    if (ccnt) {
+      return __('Applies to product from %s categories', ccnt);
+    }
+    if (pcnt) {
+      return __('Applies to %s products', pcnt);
+    }
+    return __('Does not apply to any product');
   }
-  const ccnt = count(categories);
-  const pcnt = count(products);
-  if (ccnt && pcnt) {
-    return __('Applies to %s categories and %s products', ccnt, pcnt);
-  }
-  if (ccnt) {
-    return __('Applies to product from %s categories', ccnt);
-  }
-  if (pcnt) {
-    return __('Applies to %s products', pcnt);
-  }
-  return __('Does not apply to any product');
 };
 
 const count = (val) => {

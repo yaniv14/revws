@@ -1,8 +1,8 @@
 // @flow
 
-import type { ReviewType, CriteriaType, DisplayCriteriaType, GradingShapeType, NameFormatType, ProductInfoType, ListOrder, ListOrderDirection } from 'common/types';
+import type { EntityType, ReviewType, CriteriaType, DisplayCriteriaType, GradingShapeType, NameFormatType, EntityInfoType, ListOrder, ListOrderDirection } from 'common/types';
 
-export type ReviewDisplayStyle = 'item' | 'item-with-product';
+export type ReviewDisplayStyle = 'item' | 'item-with-entity';
 
 export type SettingsType = {
   csrf: string,
@@ -43,13 +43,17 @@ export type VisitorType = {
   pseudonym: ?string,
   nameFormat: NameFormatType,
   email: string,
-  reviewedProducts: Array<number>,
-  productsToReview: Array<number>
+  reviewed: {
+    [ EntityType ]: Array<number>
+  },
+  toReview: {
+    [ EntityType ]: Array<number>
+  }
 };
 
 export type EntitiesType = {
-  products: {
-    [ number ]: ProductInfoType
+  [ EntityType ]: {
+    [ number ]: EntityInfoType
   }
 }
 
@@ -83,8 +87,9 @@ export type TranslationsType = {
 };
 
 export type ProductListWidgetType = {
-  type: 'productList',
-  productId: number,
+  type: 'entityList',
+  entityType: EntityType,
+  entityId: number,
   listId: string
 }
 

@@ -32,6 +32,7 @@ use \Logger;
 
 class Notifications {
   private static $instance;
+  private $allowed = true;
   private $queue = [];
 
   // cache
@@ -211,6 +212,10 @@ class Notifications {
   /**
    * public API
    */
+  public function enableNotifications($allowed) {
+    $this->allowed = $allowed;
+  }
+
   public function reviewCreated($id, $actor) {
     $this->push('processReviewCreated', $id, $actor);
   }
@@ -236,18 +241,25 @@ class Notifications {
   }
 
   private function getCommonData(RevwsReview $review, $lang) {
-    $productData = FrontApp::getProductData($review->id_product, $lang);
+    $ret = [];
+
+    if ($review->entity_type === 'product') {
+      $productData = FrontApp::getProductData($review->id_entity, $lang);
+      $ret = [
+        '{product_id}' => $productData['id'],
+        '{product_name}' => $productData['name'],
+        '{product_image}' => $productData['image'],
+        '{product_url}' => $productData['url']
+      ];
+    }
+
     $authorName = $review->display_name;
     if ($review->isCustomer()) {
       $customer = $this->getCustomer($review);
       $customeName = $customer->firstname . ' ' .$customer->lastname;
     }
 
-    return [
-      '{product_id}' => $productData['id'],
-      '{product_name}' => $productData['name'],
-      '{product_image}' => $productData['image'],
-      '{product_url}' => $productData['url'],
+    $ret = array_merge($ret, [
       '{review_id}' => (int)$review->id,
       '{author_type}' => $review->getAuthorType(),
       '{author_email}' => $review->email,
@@ -259,7 +271,9 @@ class Notifications {
       '{reply}' => $this->escapeContent($review->reply),
       '{validated}' => $review->validated,
       '{deleted}' => $review->deleted
-    ];
+    ]);
+
+    return $ret;
   }
 
   private function getReviewerEmail(RevwsReview $review) {
@@ -280,11 +294,13 @@ class Notifications {
 
   // utils
   private function push($type, $reviewId, $actor) {
-    $this->queue[] = [
-      'type' => $type,
-      'id' => (int)$reviewId,
-      'actor' => $actor
-    ];
+    if ($this->allowed) {
+      $this->queue[] = [
+        'type' => $type,
+        'id' => (int)$reviewId,
+        'actor' => $actor
+      ];
+    }
   }
 
   private function getReview($id) {

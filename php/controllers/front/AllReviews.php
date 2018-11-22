@@ -35,12 +35,12 @@ class RevwsAllReviewsModuleFrontController extends ModuleFrontController {
     parent::initContent();
     $frontApp = $this->module->getFrontApp();
     $list = $frontApp->addCustomListWidget('all-reviews', [], [
-      'reviewStyle' => 'item-with-product'
+      'reviewStyle' => 'item-with-entity'
     ]);
     $this->context->smarty->assign([
       'reviewList' => $list->getData(),
       'visitor' => $frontApp->getVisitorData(),
-      'reviewEntities' => $frontApp->getEntitites(),
+      'reviewEntities' => $frontApp->getEntities(),
       'reviewsData' => $frontApp->getStaticData()
     ]);
     $this->setTemplate('module:revws/views/templates/front/all-reviews.tpl');
