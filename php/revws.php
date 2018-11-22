@@ -725,6 +725,11 @@ class Revws extends Module {
     } else {
       $controller->registerStylesheet("revws-css", $file, ['media' => 'all', 'priority' => 1000]);
     }
+    $themeName = "views/css/themes/".$this->context->shop->theme->getName().".css";
+    if (file_exists(REVWS_MODULE_DIR . '/' . $themeName)) {
+      $themeFile = "/modules/revws/$themeName";
+      $controller->registerStylesheet("revws-theme-css", $themeFile, ['media' => 'all', 'priority' => 1001]);
+    }
   }
 
   private function getProductReviewsLink($product) {
