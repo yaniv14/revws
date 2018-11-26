@@ -116,6 +116,7 @@ class Revws extends Module {
       'actionRegisterKronaAction',
       'displayRevwsReview',
       'displayRevwsReviewList',
+      'displayRevwsAverageRating',
       'registerGDPRConsent',
       'actionDeleteGDPRCustomer',
       'actionExportGDPRData'
@@ -391,36 +392,45 @@ class Revws extends Module {
   public function hookDisplayRightColumnProduct($params) {
     $set = $this->getSettings();
     if ($set->getAveragePlacement() == 'rightColumn') {
-      $productId = (int)(Tools::getValue('id_product'));
-      $this->setupAverageOnProductPage($productId, 'extra');
-      return $this->display(__FILE__, 'review-average.tpl');
+      return $this->hookDisplayRevwsAverageRating(['placement' => 'extra']);
     }
   }
 
   public function hookDisplayProductAdditionalInfo($params) {
     $set = $this->getSettings();
     if ($set->getAveragePlacement() == 'buttons') {
-      $productId = (int)(Tools::getValue('id_product'));
-      $this->setupAverageOnProductPage($productId, 'buttons');
-      return $this->display(__FILE__, 'review-average.tpl');
+      return $this->hookDisplayRevwsAverageRating(['placement' => 'buttons']);
     }
   }
 
-  private function setupAverageOnProductPage($productId, $placement) {
+  public function hookDisplayRevwsAverageRating($params) {
+    if (isset($params['product'])) {
+      $product = $params['product'];
+    } else {
+      $product = (int)(Tools::getValue('id_product'));
+    }
+    if (is_object($product)) {
+      $product = $product->id;
+    }
+    if (! $product) {
+      throw new Exception('hook displayRevwsAverageRating called without product');
+    }
+    $placement = isset($params['placement']) ? $params['placement'] : 'custom-placement';
     $set = $this->getSettings();
-    list($grade, $count) = RevwsReview::getAverageGrade($set, $productId);
+    list($grade, $count) = RevwsReview::getAverageGrade($set, $product);
     $this->context->smarty->assign('placement', $placement);
-    $this->context->smarty->assign('productId', $productId);
+    $this->context->smarty->assign('productId', $product);
     $this->context->smarty->assign('grade', $grade);
     $this->context->smarty->assign('reviewCount', $count);
-    $this->context->smarty->assign('hasReviewed', $this->getVisitor()->hasWrittenReview('product', $productId));
+    $this->context->smarty->assign('hasReviewed', $this->getVisitor()->hasWrittenReview('product', $product));
     $this->context->smarty->assign('shape', $this->getShapeSettings());
     $this->context->smarty->assign('shapeSize', $set->getShapeSize());
-    $this->context->smarty->assign('canReview', $this->getPermissions()->canCreateReview('product', $productId));
+    $this->context->smarty->assign('canReview', $this->getPermissions()->canCreateReview('product', $product));
     $this->context->smarty->assign('isGuest', $this->getVisitor()->isGuest());
-    $this->context->smarty->assign('loginLink', $this->getLoginUrl($productId));
+    $this->context->smarty->assign('loginLink', $this->getLoginUrl($product));
     $this->context->smarty->assign('microdata', $set->emitRichSnippets());
     $this->context->smarty->assign('showSignInButton', $set->showSignInButton());
+    return $this->display(__FILE__, 'review-average.tpl');
   }
 
 
@@ -725,11 +735,11 @@ class Revws extends Module {
       $controller->addCSS($file, 'all');
     } else {
       $controller->registerStylesheet("revws-css", $file, ['media' => 'all', 'priority' => 1000]);
-    }
-    $themeName = "views/css/themes/".$this->context->shop->theme->getName().".css";
-    if (file_exists(REVWS_MODULE_DIR . '/' . $themeName)) {
-      $themeFile = "/modules/revws/$themeName";
-      $controller->registerStylesheet("revws-theme-css", $themeFile, ['media' => 'all', 'priority' => 1001]);
+      $themeName = "views/css/themes/".$this->context->shop->theme->getName().".css";
+      if (file_exists(REVWS_MODULE_DIR . '/' . $themeName)) {
+        $themeFile = "/modules/revws/$themeName";
+        $controller->registerStylesheet("revws-theme-css", $themeFile, ['media' => 'all', 'priority' => 1001]);
+      }
     }
   }
 
