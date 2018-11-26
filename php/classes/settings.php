@@ -460,7 +460,7 @@ class Settings {
   }
 
   private function toAveragePlacement($placement) {
-    if (in_array($placement, ['buttons', 'none'])) {
+    if (in_array($placement, ['buttons', 'custom', 'none'])) {
       return $placement;
     }
     return 'buttons';
