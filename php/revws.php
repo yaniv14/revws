@@ -871,8 +871,13 @@ class Revws extends Module {
     if (is_array($product) && isset($product['id_product'])) {
       return (int)$product['id_product'];
     }
-    if (is_object($product) && property_exists($product, 'id_product')) {
-      return (int)$product->id_product;
+    if (is_object($product)) {
+      if (property_exists($product, 'id_product')) {
+        return (int)$product->id_product;
+      }
+      if (is_callable([ $product, 'getId' ])) {
+        return (int)$product->getId();
+      }
     }
     if (is_int($product)) {
       return (int)$product;
