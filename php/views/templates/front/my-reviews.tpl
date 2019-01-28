@@ -20,11 +20,12 @@
 {block name='page_content'}
 <div id="myreviews">
   {include
-    file='modules/revws/views/templates/widgets/my-reviews/my-reviews.tpl'
-    reviewsData=$reviewsData
+    file='modules/revws/views/templates/hook/widget.tpl'
+    widget=$widget
     reviewList=$reviewList
-    reviewEntities=$reviewEntities
+    reviewEntitites=$reviewEntities
     visitor=$visitor
+    reviewsData=$reviewsData
   }
 </div>
 {/block}

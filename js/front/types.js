@@ -86,11 +86,13 @@ export type TranslationsType = {
   [ string ]: string
 };
 
-export type ProductListWidgetType = {
+export type EntityListWidgetType = {
   type: 'entityList',
   entityType: EntityType,
   entityId: number,
-  listId: string
+  listId: string,
+  allowPaging: boolean,
+  microdata: boolean,
 }
 
 export type MyReviewsWidgetType = {
@@ -104,16 +106,19 @@ export type CustomListWidgetType = {
   reviewStyle: ReviewDisplayStyle,
   displayReply: boolean,
   displayCriteria: DisplayCriteriaType,
-  allowPaging: boolean
+  allowPaging: boolean,
+  microdata: boolean
 }
 
 export type WidgetType = (
-  ProductListWidgetType |
+  EntityListWidgetType |
   MyReviewsWidgetType |
   CustomListWidgetType
 );
 
-export type WidgetsType = Array<WidgetType>;
+export type WidgetsType = {
+  [string]: WidgetType
+};
 
 export type InitDataType = {
   translations: TranslationsType,
