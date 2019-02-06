@@ -18,7 +18,7 @@
 <div id="revws-product-{$placement}">
   <b>{l s='Rating' mod='revws'}:</b>
   {if $reviewCount > 0}
-    <a class="revws-product-{$placement}-link" href="#idTabRevws">
+    <a class="revws-product-{$placement}-link" href="{if $inModal}{$linkToProduct}{/if}#idTabRevws">
       {include file='modules/revws/views/templates/helpers/grading.tpl' grade=$grade shape=$shape type='product'}
       <div class="revws-count-text">
         {if $reviewCount == 1}
@@ -30,14 +30,14 @@
     </a>
   {else}
     {if $canReview}
-      <a class="revws-product-{$placement}-link" href="#" data-revws-create-trigger="{$productId}">
+      <a class="revws-product-{$placement}-link" href="{if $inModal}{$linkToProduct}{/if}#idTabRevws" {if !$inModal}data-revws-create-trigger="{$productId}"{/if}>
         {l s='Be the first to write a review!' mod='revws'}
       </a>
     {else}
       {if $hasReviewed}
         {l s="Your review hasn't been approved yet" mod='revws'}
       {elseif $isGuest && $showSignInButton}
-        <a class="revws-product-{$placement}-link" href="{$loginLink}">
+        <a class="revws-product-{$placement}-link" href="{if $inModal}{$linkToProduct}{/if}#idTabRevw">
           {l s='Sign in to write a review' mod='revws'}
         </a>
       {else}
