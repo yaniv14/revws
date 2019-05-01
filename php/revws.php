@@ -745,9 +745,9 @@ class Revws extends Module {
     return $link;
   }
 
-  public function getLoginUrl() {
+  public function getLoginUrl($productId) {
     return $this->context->link->getPageLink('authentication', true, null, [
-      'back' => ''
+      'back' => $this->getProductReviewsLink($productId)
     ]);
   }
 
