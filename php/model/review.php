@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2017-2018 Petr Hucik <petr@getdatakick.com>
+* Copyright (C) 2017-2019 Petr Hucik <petr@getdatakick.com>
 *
 * NOTICE OF LICENSE
 *
@@ -13,7 +13,7 @@
 * to license@getdatakick.com so we can send you a copy immediately.
 *
 * @author    Petr Hucik <petr@getdatakick.com>
-* @copyright 2017-2018 Petr Hucik
+* @copyright 2017-2019 Petr Hucik
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
 
@@ -38,7 +38,7 @@ class RevwsReview extends ObjectModel {
       'id_lang'        => [ 'type' => self::TYPE_INT],
       'email'          => [ 'type' => self::TYPE_STRING ],
       'display_name'   => [ 'type' => self::TYPE_STRING, 'required' => true ],
-      'title'          => [ 'type' => self::TYPE_STRING, 'required' => true ],
+      'title'          => [ 'type' => self::TYPE_STRING ],
       'content'        => [ 'type' => self::TYPE_STRING, 'size' => 65535],
       'reply'          => [ 'type' => self::TYPE_STRING, 'size' => 65535],
       'validated'      => [ 'type' => self::TYPE_BOOL, 'validate' => 'isBool' ],
@@ -391,7 +391,7 @@ class RevwsReview extends ObjectModel {
       'grades' => $this->grades,
       'grade' => round(Utils::calculateAverage($this->grades)),
       'images' => $images,
-      'title' => $this->title,
+      'title' => empty($this->title) ? '' : $this->title,
       'language' => (int)$this->id_lang,
       'content' => $this->content,
       'underReview' => !$this->validated,
@@ -430,7 +430,7 @@ class RevwsReview extends ObjectModel {
     $review->entity_type = $dbData['entity_type'];
     $review->id_entity = (int)$dbData['id_entity'];
     $review->email = $dbData['email'];
-    $review->title = $dbData['title'];
+    $review->title = empty($dbData['title']) ? '' : $dbData['title'];
     $review->content = $dbData['content'];
     $review->date_add = $dbData['date_add'];
     $review->date_upd = $dbData['date_add'];

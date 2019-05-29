@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2017-2018 Petr Hucik <petr@getdatakick.com>
+* Copyright (C) 2017-2019 Petr Hucik <petr@getdatakick.com>
 *
 * NOTICE OF LICENSE
 *
@@ -13,7 +13,7 @@
 * to license@getdatakick.com so we can send you a copy immediately.
 *
 * @author    Petr Hucik <petr@getdatakick.com>
-* @copyright 2017-2018 Petr Hucik
+* @copyright 2017-2019 Petr Hucik
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
 
@@ -340,7 +340,7 @@ class Revws extends Module {
       }
       $content = $this->display(__FILE__, 'product_tab_content.tpl');
       $tab = new PrestaShop\PrestaShop\Core\Product\ProductExtraContent();
-      $tab->setTitle($this->l('Reviews'));
+      $tab->setTitle(sprintf($this->l('Reviews (%s)'), $list->getTotal()));
       $tab->setContent($content);
       return [ $tab ];
     } else {
@@ -352,6 +352,7 @@ class Revws extends Module {
     $set = $this->getSettings();
     if ($set->getPlacement() === 'block') {
       $list = $this->getProductReviewList();
+      $this->context->smarty->assign('revwsTotal', $list->getTotal());
       if ($list->isEmpty() && $this->getVisitor()->isGuest() && $set->hideEmptyReviews()) {
         return;
       }

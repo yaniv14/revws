@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2017-2018 Petr Hucik <petr@getdatakick.com>
+* Copyright (C) 2017-2019 Petr Hucik <petr@getdatakick.com>
 *
 * NOTICE OF LICENSE
 *
@@ -13,7 +13,7 @@
 * to license@getdatakick.com so we can send you a copy immediately.
 *
 * @author    Petr Hucik <petr@getdatakick.com>
-* @copyright 2017-2018 Petr Hucik
+* @copyright 2017-2019 Petr Hucik
 * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 */
 
@@ -53,6 +53,11 @@ class ReviewList implements JsonSerializable {
   public function isEmpty() {
     $this->ensureLoaded();
     return $this->list['total'] == 0;
+  }
+
+  public function getTotal() {
+    $this->ensureLoaded();
+    return (int)$this->list['total'];
   }
 
   public function getReviews() {
