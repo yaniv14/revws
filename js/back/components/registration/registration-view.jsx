@@ -73,11 +73,10 @@ class Registration extends React.PureComponent<Props> {
     if (step == 1) {
       valid = isEmail(email);
     }
-    const offset = (-step * 150) + '%';
     const style = {
       ...styles.root,
-      marginRight: isRtl ? offset : undefined,
-      marginLeft:  isRtl ? undefined : offset,
+      marginRight: isRtl ? (step * 150) + '%' : undefined,
+      marginLeft:  isRtl ? undefined : (-step * 150) + '%'
     };
     return (
       <Dialog open={show} maxWidth='md'>
