@@ -60,7 +60,7 @@ class Revws extends Module {
   public function __construct() {
     $this->name = 'revws';
     $this->tab = 'administration';
-    $this->version = '1.0.25';
+    $this->version = '1.1.0';
     $this->author = 'DataKick';
     $this->need_instance = 0;
     $this->bootstrap = true;
@@ -119,7 +119,8 @@ class Revws extends Module {
       'displayRevwsAverageRating',
       'registerGDPRConsent',
       'actionDeleteGDPRCustomer',
-      'actionExportGDPRData'
+      'actionExportGDPRData',
+      'actionGetConseqsTriggers',
     ]);
   }
 
@@ -848,10 +849,22 @@ class Revws extends Module {
     return $this->frontApp;
   }
 
-  public function hookDisplayBeforeBodyClosingTag() {
-    if ($this->frontApp) {
-      echo '<script type="text/javascript">var revwsData='.json_encode($this->frontApp).';</script>';
-    }
+  public function hookDisplayBeforeBodyClosingTag()
+  {
+      if ($this->frontApp) {
+          echo '<script type="text/javascript">var revwsData=' . json_encode($this->frontApp) . ';</script>';
+      }
+  }
+
+  public function hookActionGetConseqsTriggers()
+  {
+    require_once(__DIR__ . '/classes/integration/conseqs-trigger.php');
+    return [
+        'reviewCreated' => new \Revws\ConseqsTrigger($this->l('Revws: Review created'), $this->l('Executed when review is created'), 'actionRevwsReviewCreated'),
+        'reviewUpdated' => new \Revws\ConseqsTrigger($this->l('Revws: Review updated'), $this->l('Executed when review is updated'), 'actionRevwsReviewUpdated'),
+        'reviewDeleted' => new \Revws\ConseqsTrigger($this->l('Revws: Review deleted'), $this->l('Executed when review is deleted'), 'actionRevwsReviewDeleted'),
+        'reviewApproved' => new \Revws\ConseqsTrigger($this->l('Revws: Review approved'), $this->l('Executed when review is approved'), 'actionRevwsReviewApproved')
+    ];
   }
 
   private static function getProductId($product) {
