@@ -57,7 +57,8 @@ export type SettingsType = {
     allowReporting: boolean,
     allowDelete: boolean,
     allowEdit: boolean,
-    displayCriteria: DisplayCriteriaType
+    displayCriteria: DisplayCriteriaType,
+    allowMultipleReviews: boolean,
   },
   images: {
     enabled: boolean,
@@ -102,7 +103,7 @@ export type EnvironmentType = {
 export type GlobalDataType = {
   activated: boolean,
   version: string,
-  versionUrl: string,
+  storeUrl?: string,
   api: string,
   shopName: string,
   baseUrl: string,
