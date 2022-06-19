@@ -237,8 +237,8 @@ gulp.task('merge-translations-keys', function(done) {
 
 gulp.task('translate', gulp.series('extract-front-translations', 'extract-back-translations', 'create-translations', 'merge-translations-keys'));
 
-// gulp.task('stage', gulp.series('copy-text-files', 'copy-binary-files', 'copy-bootstrap-js', 'copy-build', 'create-index', 'create-config-xml'));
-gulp.task('stage', gulp.series('copy-text-files', 'copy-binary-files', 'copy-bootstrap-js', 'copy-build', 'create-index', 'create-config-xml', 'translate'));
+gulp.task('stage', gulp.series('copy-text-files', 'copy-binary-files', 'copy-bootstrap-js', 'copy-build', 'create-index', 'create-config-xml'));
+// gulp.task('stage', gulp.series('copy-text-files', 'copy-binary-files', 'copy-bootstrap-js', 'copy-build', 'create-index', 'create-config-xml', 'translate'));
 
 gulp.task('upload', function(done) {
   const file = path.resolve('./build/revws-'+getFileVersion()+'.zip');
