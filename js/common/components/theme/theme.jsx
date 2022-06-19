@@ -1,8 +1,9 @@
 //@flow
 
-import type {Node} from "React";import React from 'react';
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import { getFontSize } from 'common/utils/browser';
+import type {Node} from 'React';
+import React from 'react';
+import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles';
+import {getFontSize} from 'common/utils/browser';
 
 type Props = {
   htmlFontSize: number,
@@ -14,17 +15,17 @@ type Props = {
 class AppTheme extends React.PureComponent<Props> {
   static displayName: ?string = 'AppTheme';
 
-  static defaultProps: {|htmlFontSize: any, zIndexBase: number|} = {
+  static defaultProps: {| htmlFontSize: any, zIndexBase: number |} = {
     htmlFontSize: getFontSize(),
     zIndexBase: 17000000,
-  }
+  };
 
   render(): Node {
-    const { zIndexBase, children, htmlFontSize, fontFamily } = this.props;
+    const {zIndexBase, children, htmlFontSize, fontFamily} = this.props;
     const theme = createMuiTheme({
       typography: {
         htmlFontSize: htmlFontSize,
-        fontFamily
+        fontFamily,
       },
       zIndex: {
         mobileStepper: zIndexBase + 1000,
@@ -33,12 +34,12 @@ class AppTheme extends React.PureComponent<Props> {
         modal: zIndexBase + 1300,
         snackbar: zIndexBase + 1400,
         tooltip: zIndexBase + 1500,
-      }
+      },
     });
     return (
       <MuiThemeProvider theme={theme}>
         <div className="revws-reset">
-          { children }
+          {children}
         </div>
       </MuiThemeProvider>
     );

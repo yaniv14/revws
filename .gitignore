@@ -2,3 +2,4 @@ node_modules
 revws*.zip
 php/config.xml
 php/views/css/revws-*.css
+.idea

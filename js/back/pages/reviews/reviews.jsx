@@ -38,7 +38,7 @@ class ReviewsPage extends React.PureComponent<Props> {
     const shape = data.shapes[settings.theme.shape];
     const shapeSize = settings.theme.shapeSize.product;
     return (
-      <div>
+      <div className="ym-table">
         <ReviewsTable
           shopName={data.shopName}
           language={data.language}

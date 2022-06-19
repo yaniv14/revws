@@ -21,7 +21,7 @@
     "eslint-plugin-react": "^7.21.5",
     "file-loader": "6.2.0",
     "flow-bin": "0.136.0",
-    "gulp": "4.0",
+    "gulp": "^4.0.2",
     "gulp-eslint": "6.0.0",
     "gulp-license-check": "1.2.1",
     "gulp-rename": "2.0.0",

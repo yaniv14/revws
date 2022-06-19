@@ -2,11 +2,13 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+
   .group {
     padding-top: 2rem;
   }
+
   .group:not(:last-child) {
-    margin-right: 120px;
+    margin-left: 120px;
   }
 }
 
@@ -22,15 +24,16 @@
 }
 
 .footerContent {
-  float: right;
+  float: left;
+
   button {
-    margin-left: 1rem;
+    margin-right: 1rem;
   }
 }
 
 .sectionList {
   list-style-type: none;
-  padding-left: 0px;
+  padding-right: 0;
 }
 
 .sectionListItem {
@@ -41,6 +44,7 @@
     font-size: 1.1rem;
     line-height: 1.6rem;
   }
+
   a:hover {
     color: #222;
   }
@@ -63,13 +67,14 @@
 
 .subSection {
   width: 100%;
-  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 .note {
   margin-top: 1rem;
   font-size: 80%;
   color: #999;
+
   pre {
     background: #eee;
     padding: 1em;

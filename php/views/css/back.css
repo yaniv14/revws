@@ -17,9 +17,16 @@
 .fancybox-overlay {
   z-index: 19008010 !important;
 }
+
 .fancybox-wrap {
-	z-index: 19008020 !important;
+  z-index: 19008020 !important;
 }
+
 .fancybox-opened {
   z-index: 19008030 !important;
+}
+
+.ym-table [class^="MuiPaper-"] [class^="MuiToolbar-"] {
+  padding-inline-start: 24px;
+  padding-inline-end: 2px;
 }
