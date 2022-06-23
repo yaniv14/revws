@@ -498,11 +498,11 @@ a .revws-grading {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 400px;
+  // height: 400px;
 }
 
 .revws-dialog h2 {
-  padding-bottom: 3rem;
+  padding: 1rem 0;
   font-size: 1.5em;
   color: #999;
 }
@@ -574,7 +574,7 @@ a .revws-grading {
 }
 
 .revws-review-form .revws-review-form-input {
-  margin-top: 3rem;
+  margin-top: 1rem;
 }
 
 .revws-review-form .revws-review-form-criterion {
@@ -629,10 +629,12 @@ a .revws-grading {
 }
 
 .revws-review-form-image-text:before {
-  content: "\f0c6";
-  font-size: 1.5rem;
-  font-family: FontAwesome;
-  padding-left: 5px;
+  content: "";
+  padding-left: 25px;
+  background-image: url("/themes/berez/img/paperclip.svg");
+  background-repeat: no-repeat;
+  background-size: 16px;
+  background-position: center right;
 }
 
 .revws-review-form-image-text:hover {

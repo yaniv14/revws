@@ -117,7 +117,8 @@ class EditReviewDialog extends React.PureComponent<Props> {
     const { width, settings, onUpdateReview } = this.props;
     const grades = review.grades;
     const smallDevice = width === 'sm' || width == 'xs';
-    const size = settings.shapeSize.create / (smallDevice ? 2 : 1);
+    const size = settings.shapeSize.create / (smallDevice ? 3 : 2);
+    // const size = settings.shapeSize.create / (smallDevice ? 2 : 1);
     const criteria = reject(isNil, map(key => prop(key, settings.criteria), entity.criteria));
     return (
       <Grades
