@@ -6,55 +6,69 @@ module.exports = function(name) {
   var plugins = [
     new ExtractTranslationKeysPlugin({
       functionName: '__',
-      output: path.resolve('./build/'+name+'-translation-keys.json')
+      output: path.resolve('./build/' + name + '-translation-keys.json'),
     }),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify("production"),
-    })
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
   ];
-  var app = [ "babel-polyfill", name ];
+  var app = ['babel-polyfill', name];
 
   return {
     module: {
       rules: [
         {
           test: /\.jsx?$/,
-          loaders: ['babel-loader'],
-          exclude: [ /node_modules/]
+          use: ['babel-loader'],
+          exclude: [/node_modules/],
         },
         {
           test: /\.less$/,
-          loaders: ['style-loader', 'css-loader?module', 'less-loader' ]
+          use: [
+            'style-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+              },
+            },
+            {
+              loader: 'less-loader',
+              options: {
+                noIeCompat: true,
+              },
+            },
+          ],
         },
         {
           test: /\.css$/,
-          loaders: ['style-loader', 'css-loader'],
+          use: ['style-loader', 'css-loader'],
         },
         {
           test: /\.svg$/,
-          loaders: ['svg-react-loader']
+          use: ['svg-react-loader'],
         },
         {
           test: /\.json$/,
-          loaders: ['json-loader']
-        }
-      ]
+          use: ['json-loader'],
+        },
+      ],
     },
 
     entry: {
-      'transl': app
+      'transl': app,
     },
 
     resolve: {
       modules: ['js', 'node_modules'],
-      extensions: ['.js', '.jsx', '.css']
+      extensions: ['.js', '.jsx', '.css'],
     },
 
     output: {
       filename: '[name].js',
       path: path.resolve('./build/'),
-      publicPath: '/'
+      publicPath: '/',
     },
-    plugins: plugins
+    plugins: plugins,
   };
 };
