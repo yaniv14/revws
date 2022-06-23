@@ -4,7 +4,7 @@ global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{revws}prestashop>app-translation_8f839f87018d358124bc6aa5c9383c9a'] = 'האם אתה בטוח שברצונך למחוק את הביקורת הזו?';
 $_MODULE['<{revws}prestashop>app-translation_b6b60c15b0dcda6580992bfd10914f1a'] = 'צרף תמונות';
-$_MODULE['<{revws}prestashop>app-translation_ff7872689b6546ccf30f86adf2ac8b1a'] = 'היה הראשון לכתוב ביקורת!';
+$_MODULE['<{revws}prestashop>app-translation_ff7872689b6546ccf30f86adf2ac8b1a'] = 'חווה דעתך על המוצר';
 $_MODULE['<{revws}prestashop>app-translation_d92654550d838defd4d2e6344d13fc74'] = 'על ידי שליחת ביקורת זו אתם מסכים לשימוש בנתונים שלכם כפי שמתואר במדיניות הפרטיות שלנו';
 $_MODULE['<{revws}prestashop>app-translation_ea4788705e6873b424c65e91c2846b19'] = 'ביטול';
 $_MODULE['<{revws}prestashop>app-translation_f33f1b5b551e943f4bfd4cc865d38572'] = 'לחץ כאן כדי להשיב';
@@ -157,7 +157,7 @@ $_MODULE['<{revws}prestashop>my-account_d2e8b92e10ca61c48d73cc0c5ee628d8'] = 'ה
 $_MODULE['<{revws}prestashop>my-reviews_d95cf4ab2cbf1dfb63f066b50558b07d'] = 'החשבון שלי';
 $_MODULE['<{revws}prestashop>my-reviews_d2e8b92e10ca61c48d73cc0c5ee628d8'] = 'הביקורות שלי';
 $_MODULE['<{revws}prestashop>my-reviews_a958dbb46713e59856c35f89e5092a5e'] = 'חזרה לחשבון שלך';
-$_MODULE['<{revws}prestashop>product_footer_342e1148ba5902c92f649b884ff85ec1'] = '(%s) ביקורות';
+$_MODULE['<{revws}prestashop>product_footer_342e1148ba5902c92f649b884ff85ec1'] = 'ביקורות (%s)';
 $_MODULE['<{revws}prestashop>product_list_ba184250416f4c700caaa55c8ec56004'] = 'ביקורת אחת';
 $_MODULE['<{revws}prestashop>product_list_ebcc4dead2ca5322b2091dbad320992a'] = '%1$d ביקורות';
 $_MODULE['<{revws}prestashop>product_tab_header_342e1148ba5902c92f649b884ff85ec1'] = '(%s) ביקורות';

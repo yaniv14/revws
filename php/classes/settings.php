@@ -97,7 +97,7 @@ class Settings {
         ],
         'myReviews' => [
           'show' => true,
-          'iconClass' => 'icon icon-star',
+          'iconClass' => 'bi bi-star',
           'reviewsPerPage' => 5,
           'maxRequests' => 3
         ],

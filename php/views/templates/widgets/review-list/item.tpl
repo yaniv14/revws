@@ -17,7 +17,7 @@
 *}
 {assign "showCriteria" count($review.grades) > 1}
 {strip}
-<div class="revws-review {if $review.underReview}revws-review-under-review {/if}{if $review.verifiedBuyer}revws-verified-buyer {/if}" {if $microdata}itemprop="review" itemscope itemtype="http://schema.org/Review"{/if}>
+<div class="revws-review flex-column mb-2 mt-0 p-0 {if $review.underReview}revws-review-under-review {/if}{if $review.verifiedBuyer}revws-verified-buyer {/if}" {if $microdata}itemprop="review" itemscope itemtype="http://schema.org/Review"{/if}>
   <div class="revws-review-author">
     <div class="revws-review-author-name" {if $microdata}itemprop="author" itemscope itemtype="http://schema.org/Person"{/if}>
       <span {if $microdata}itemprop="name"{/if}>{$review.displayName|escape:'html':'UTF-8'}</span>
@@ -106,31 +106,31 @@
       {if $review.canVote}
         <div class="revws-action revws-useful">{l s='Was this comment useful to you?' mod='revws'}
           <a class="btn btn-xs btn-link">
-            <i class="icon icon-thumbs-up"></i> {l s='Yes' mod='revws'}
+            <i class="bi bi-hand-thumbs-up"></i> {l s='Yes' mod='revws'}
           </a>
           <a class="btn btn-xs btn-link">
-            <i class="icon icon-thumbs-down"></i> {l s='No' mod='revws'}
+            <i class="bi bi-hand-thumbs-down"></i> {l s='No' mod='revws'}
           </a>
         </div>
       {/if}
       {if $review.canReport}
         <div class="revws-action revws-report">
           <a class="btn btn-xs btn-link">
-            <i class="icon icon-flag"></i> {l s='Report abuse' mod='revws'}
+            <i class="bi bi-flag"></i> {l s='Report abuse' mod='revws'}
           </a>
         </div>
       {/if}
       {if $review.canEdit}
         <div class="revws-action revws-edit">
           <a class="btn btn-xs btn-link">
-            <i class="icon icon-edit"></i> {l s='Edit review' mod='revws'}
+            <i class="bi bi-pencil"></i> {l s='Edit review' mod='revws'}
           </a>
         </div>
       {/if}
       {if $review.canDelete}
         <div class="revws-action revws-delete">
           <a class="btn btn-xs btn-link">
-            <i class="icon icon-remove"></i> {l s='Delete review' mod='revws'}
+            <i class="bi bi-trash"></i> {l s='Delete review' mod='revws'}
           </a>
         </div>
       {/if}

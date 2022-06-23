@@ -76,7 +76,7 @@ class ReviewListItem extends React.PureComponent<Props, State> {
   render(): Element<"div"> {
     const { colors, shape, shapeSize, onReport, onEdit, onDelete, onVote, review, criteria, displayCriteria, dateFormat, displayMicrodata } = this.props;
     const { displayName, date, title, underReview, verifiedBuyer, content, canVote, canReport, grades, canEdit, canDelete, loading } = review;
-    const classes = classnames('revws-review', {
+    const classes = classnames('revws-review flex-column mb-2 mt-0 p-0', {
       'revws-review-under-review': underReview,
       'revws-verified-buyer': verifiedBuyer
     });
@@ -92,6 +92,7 @@ class ReviewListItem extends React.PureComponent<Props, State> {
       grade = averageGrade(review);
       stars = (
         <Grading
+          className={'col-auto'}
           grade={grade}
           shape={shape}
           type={'product'}
@@ -103,12 +104,25 @@ class ReviewListItem extends React.PureComponent<Props, State> {
     return (
       <div className={classes} {...microdata({ itemProp: "review", itemScope: true, itemType: "http://schema.org/Review" })}>
         { loading  && <div className="revws-loading" /> }
-        <div className="revws-review-author">
-          <div className="revws-review-author-name" {...microdata({ itemProp: "author", itemScope: true, itemType: "http://schema.org/Person"})}>
-            <span {...microdata({ itemProp: "name" })}>{ displayName }</span>
+        <div className="revws-review-author row">
+          <div className="revws-review-author-name col-12" {...microdata({ itemProp: "author", itemScope: true, itemType: "http://schema.org/Person"})}>
+            <div className="row align-items-center sm-gutters">
+              <div className="col-auto">
+                <img src="/modules/revws/views/img/avatar.svg" width="34" height="34" alt=""/>
+              </div>
+              <div className="col">
+                <span {...microdata({ itemProp: "name" })}>{ displayName }</span>
+              </div>
+            </div>
           </div>
-          {verifiedBuyer && <div className="revws-verified-buyer-badge">{__("Verified purchase")}</div>}
-          {stars}
+          <div className="col-12">
+            <div className="row align-items-center sm-gutters">
+              {stars}
+              {title && (
+                <p className="revws-review-title col mb-0" {...microdata({ itemProp: "name" })}>{ title }</p>
+              )}
+            </div>
+          </div>
           {stars && displayMicrodata && (
             <div className="revws-hidden" itemProp="reviewRating" itemScope itemType="http://schema.org/Rating">
               <meta itemProp="worstRating" content="1" />
@@ -116,11 +130,14 @@ class ReviewListItem extends React.PureComponent<Props, State> {
               <meta itemProp="bestRating" content="5" />
             </div>
           )}
-          <div className="revws-review-date" {...microdata({ itemProp: "datePublished", content: formatDate("Y-m-d", date)})}>{formatDate(dateFormat, date)}</div>
+          <div className="revws-review-date col-12" {...microdata({ itemProp: "datePublished", content: formatDate("Y-m-d", date)})}>
+            {__("Reviewed at")}: {formatDate(dateFormat, date)}
+          </div>
+          {verifiedBuyer && <div className="revws-verified-buyer-badge col-12">{__("Verified purchase")}</div>}
         </div>
 
-        <div className="revws-review-details">
-          <div className="revws-review-review">
+        <div className="revws-review-details row">
+          <div className="revws-review-review col-12">
             <div className="revws-review-box">
               {showCriteria && displayCriteria == 'inline' && (
                 <InlineCriteria
@@ -130,14 +147,11 @@ class ReviewListItem extends React.PureComponent<Props, State> {
                   colors={colors}
                   criteria={crits} />
               )}
-              {title && (
-                <p className="revws-review-title" {...microdata({ itemProp: "name" })}>{ title }</p>
-              )}
               {underReview && (
                 <div className="revws-under-review">{__("This review hasn't been approved yet")}</div>
               )}
               {content && (
-                <p className="revws-review-content" {...microdata({ itemProp: "content" })}>{ this.renderContent(content) }</p>
+                <p className="revws-review-content mb-1" {...microdata({ itemProp: "content" })}>{ this.renderContent(content) }</p>
               )}
               {!title && !content && (
                 <p className="revws-review-content revws-review-without-details">
@@ -155,36 +169,36 @@ class ReviewListItem extends React.PureComponent<Props, State> {
             )}
           </div>
           { this.renderImages() }
-          <div className="revws-actions">
+          <div className="revws-actions col-12">
             {canVote && (
               <div className="revws-action revws-useful">
                 {__('Was this comment useful to you?')}
                 <a className="btn btn-xs btn-link" onClick={() => onVote(review, 'up')}>
-                  <i className="icon icon-thumbs-up"></i> {__('Yes')}
+                  <i className="bi bi-hand-thumbs-up"></i> {__('Yes')}
                 </a>
                 <a className="btn btn-xs btn-link" onClick={() => onVote(review, 'down')}>
-                  <i className="icon icon-thumbs-down"></i> {__('No')}
+                  <i className="bi bi-hand-thumbs-down"></i> {__('No')}
                 </a>
               </div>
             )}
             {canReport && (
               <div className="revws-action revws-report">
                 <a className="btn btn-xs btn-link" onClick={() => onReport(review)}>
-                  <i className="icon icon-flag"></i> {__('Report abuse')}
+                  <i className="bi bi-flag"></i> {__('Report abuse')}
                 </a>
               </div>
             )}
             {canEdit && (
               <div className="revws-action revws-edit">
                 <a className="btn btn-xs btn-link" onClick={() => onEdit(review)}>
-                  <i className="icon icon-edit"></i> {__('Edit review')}
+                  <i className="bi bi-pencil"></i> {__('Edit review')}
                 </a>
               </div>
             )}
             {canDelete && (
               <div className="revws-action revws-delete">
                 <a className="btn btn-xs btn-link" onClick={() => onDelete(review)}>
-                  <i className="icon icon-remove"></i> {__('Delete review')}
+                  <i className="bi bi-trash"></i> {__('Delete review')}
                 </a>
               </div>
             )}
@@ -201,7 +215,7 @@ class ReviewListItem extends React.PureComponent<Props, State> {
       return null;
     }
     return (
-      <div className="revws-images">
+      <div className="revws-images col-12">
         { images.map(this.renderImage) }
       </div>
     );
@@ -238,7 +252,7 @@ class ReviewListItem extends React.PureComponent<Props, State> {
     });
     const onClick = canEdit ? this.startEditReply : null;
     return (
-      <div className="revws-replies">
+      <div className="revws-replies col-12">
         <div className={clazz} onClick={onClick}>
           <div className="revws-reply-title">
             {__('Reply from %s:', shopName)}
