@@ -39,9 +39,11 @@
 </div>
 
 <nav>
-  <ul class="pager">
+  <ul class="pager list-unstyled">
     <li class="previous">
-      <a href="{$link->getPageLink('my-account', true)|escape:'html':'UTF-8'}" title="{l s='Back to your account' mod='revws'}">&larr; {l s='Back to your account' mod='revws'}</a>
+      <a href="{$link->getPageLink('my-account', true)|escape:'html':'UTF-8'}" title="{l s='Back to your account' mod='revws'}">
+        {if $isRtl}&rarr;{else}&larr;{/if} {l s='Back to your account' mod='revws'}
+      </a>
     </li>
   </ul>
 </nav>
