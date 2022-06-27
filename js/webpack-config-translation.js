@@ -1,26 +1,28 @@
 var path = require('path');
 var webpack = require('webpack');
-var ExtractTranslationKeysPlugin = require('translations-keys');
+var ExtractTranslationKeysPlugin = require('webpack-extract-translation-keys-plugin');
+var babelConfig = require('./babel.config.json');
 
 module.exports = function(name) {
   var plugins = [
     new ExtractTranslationKeysPlugin({
       functionName: '__',
-      output: path.resolve('./build/' + name + '-translation-keys.json'),
+      output: path.resolve('./build/'+name+'-translation-keys.json')
     }),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
-    }),
+      'process.env.NODE_ENV': JSON.stringify("production"),
+    })
   ];
-  var app = ['babel-polyfill', name];
 
   return {
+    mode: 'production',
     module: {
       rules: [
         {
           test: /\.jsx?$/,
-          use: ['babel-loader'],
-          exclude: [/node_modules/],
+          loader: 'babel-loader',
+          options: babelConfig,
+          exclude: [ /node_modules/]
         },
         {
           test: /\.less$/,
@@ -29,16 +31,11 @@ module.exports = function(name) {
             {
               loader: 'css-loader',
               options: {
-                importLoaders: 1,
-              },
+                modules: true
+              }
             },
-            {
-              loader: 'less-loader',
-              options: {
-                noIeCompat: true,
-              },
-            },
-          ],
+            'less-loader'
+          ]
         },
         {
           test: /\.css$/,
@@ -46,29 +43,30 @@ module.exports = function(name) {
         },
         {
           test: /\.svg$/,
-          use: ['svg-react-loader'],
+          loader: 'svg-react-loader'
         },
         {
           test: /\.json$/,
-          use: ['json-loader'],
-        },
-      ],
+          loader: 'json-loader'
+        }
+      ]
     },
 
     entry: {
-      'transl': app,
+      'transl': [ name ]
     },
 
     resolve: {
       modules: ['js', 'node_modules'],
-      extensions: ['.js', '.jsx', '.css'],
+      extensions: ['.js', '.jsx', '.css']
     },
 
     output: {
       filename: '[name].js',
       path: path.resolve('./build/'),
-      publicPath: '/',
+      publicPath: '/'
     },
-    plugins: plugins,
+
+    plugins: plugins
   };
 };

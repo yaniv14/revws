@@ -59,7 +59,7 @@ class EditReviewForm extends React.PureComponent<Props> {
               error={!! errors.email}
               fullWidth />
             <FormControlLabel
-              className={styles.formControl}
+              className={styles.formControl + ' verified-buyer-admin'}
               control={
                 <Checkbox
                   checked={review.verifiedBuyer}
@@ -78,7 +78,7 @@ class EditReviewForm extends React.PureComponent<Props> {
               <Grid item md={6}>
                 <TextField
                   id="date"
-                  label="Review Date"
+                  label={__("Review Date")}
                   type="date"
                   value={moment(date).format('YYYY-MM-DD')}
                   onChange={this.setDate}
@@ -126,7 +126,7 @@ class EditReviewForm extends React.PureComponent<Props> {
             size={25}
             grade={grade}
             onSetGrade={(grade) => this.onSetGrade(critKey, grade)} />
-          <span className={styles.criterionLabel}>{label}</span>
+          <span className={styles.criterionLabel + ' mr-10'}>{label}</span>
         </div>
       );
     }

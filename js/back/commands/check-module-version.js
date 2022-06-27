@@ -17,48 +17,48 @@ export const checkModuleVersion = (data: GlobalDataType): ((action: CheckModuleV
     console.info('Failed to check new version: ', err);
   };
 
-  window.$.ajax({
-    url: storeUrl,
-    type: 'POST',
-    dataType: 'json',
-    data: {
-      json: JSON.stringify({
-        module: 'revws',
-        command: 'version',
-        payload: {
-          domain,
-          platform,
-          platformVersion,
-          licenseType: 'free',
-          version: version,
-        }
-      })
-    },
-    success: (data) => {
-      if (data && data.data && data.data.version) {
-        const ver = data.data.version;
-        const notes = data.data.notes || '';
-        const paid = data.data.paid || null;
-        const ts = (new Date()).getTime();
-        const err = validateVersion(ver);
-        if (! err) {
-          store.dispatch(setLatestVersion(ver, ts, notes, paid));
-          if (versionNum(ver) > versionNum(currentVersion)) {
-            store.dispatch(setSnackbar(__('New module version is available')));
-          }
-        } else {
-          error(err+': '+ver);
-        }
-      } else {
-        error(data.error);
-      }
-    },
-    error: (res) => {
-      if (res.status === 0) {
-        error('Network issue - CORS / request has been terminated');
-      } else {
-        error(res.status+' '+res.statusText);
-      }
-    },
-  });
+  // window.$.ajax({
+  //   url: storeUrl,
+  //   type: 'POST',
+  //   dataType: 'json',
+  //   data: {
+  //     json: JSON.stringify({
+  //       module: 'revws',
+  //       command: 'version',
+  //       payload: {
+  //         domain,
+  //         platform,
+  //         platformVersion,
+  //         licenseType: 'free',
+  //         version: version,
+  //       }
+  //     })
+  //   },
+  //   success: (data) => {
+  //     if (data && data.data && data.data.version) {
+  //       const ver = data.data.version;
+  //       const notes = data.data.notes || '';
+  //       const paid = data.data.paid || null;
+  //       const ts = (new Date()).getTime();
+  //       const err = validateVersion(ver);
+  //       if (! err) {
+  //         store.dispatch(setLatestVersion(ver, ts, notes, paid));
+  //         if (versionNum(ver) > versionNum(currentVersion)) {
+  //           store.dispatch(setSnackbar(__('New module version is available')));
+  //         }
+  //       } else {
+  //         error(err+': '+ver);
+  //       }
+  //     } else {
+  //       error(data.error);
+  //     }
+  //   },
+  //   error: (res) => {
+  //     if (res.status === 0) {
+  //       error('Network issue - CORS / request has been terminated');
+  //     } else {
+  //       error(res.status+' '+res.statusText);
+  //     }
+  //   },
+  // });
 };

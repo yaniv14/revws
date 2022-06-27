@@ -63,7 +63,7 @@ class SelectProduct extends React.PureComponent<Props, State> {
     const { text } = this.state;
     const hasCustomers = !!this.props.customers;
     return (
-      <div>
+      <div className="fix-label">
         <TextField
           label={__("Search customers")}
           placeholder={__("Search customers")}

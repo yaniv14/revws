@@ -149,12 +149,12 @@ class Settings extends React.PureComponent<Props, State> {
               <li className={styles.sectionListItem}>
                 <a onClick={() => goTo(criteriaPage())}>{__('Manage review criteria')}</a>
               </li>
-              <li className={styles.sectionListItem}>
-                <a onClick={() => goTo(reviewsPage('data'))}>{__('Import and export reviews')}</a>
-              </li>
-              <li className={styles.sectionListItem}>
-                <a onClick={() => goTo(supportPage())}>{__('Help and support')}</a>
-              </li>
+              {/*<li className={styles.sectionListItem}>*/}
+              {/*  <a onClick={() => goTo(reviewsPage('data'))}>{__('Import and export reviews')}</a>*/}
+              {/*</li>*/}
+              {/*<li className={styles.sectionListItem}>*/}
+              {/*  <a onClick={() => goTo(supportPage())}>{__('Help and support')}</a>*/}
+              {/*</li>*/}
             </ul>
           </div>
         </Grid>
@@ -429,11 +429,11 @@ class Settings extends React.PureComponent<Props, State> {
             value={settings.review.displayName}
             fullWidth
             onChange={e => this.set(['review', 'displayName'], e.target.value)}>
-            <MenuItem value='fullName'>John Doe</MenuItem>
-            <MenuItem value='firstName'>John</MenuItem>
-            <MenuItem value='lastName'>Doe</MenuItem>
-            <MenuItem value='initials'>J.D.</MenuItem>
-            <MenuItem value='initialLastName'>John D.</MenuItem>
+            <MenuItem value='fullName'>{__("John Doe")}</MenuItem>
+            <MenuItem value='firstName'>{__("John")}</MenuItem>
+            <MenuItem value='lastName'>{__("Doe")}</MenuItem>
+            <MenuItem value='initials'>{__("J.D.")}</MenuItem>
+            <MenuItem value='initialLastName'>{__("John D.")}</MenuItem>
             {krona && <MenuItem value='pseudonym'>Krona Pseudonym</MenuItem>}
             <MenuItem value='custom'>{__('Custom')}</MenuItem>
           </TextField>
@@ -556,7 +556,7 @@ class Settings extends React.PureComponent<Props, State> {
           />
         </FormGroup>
         <div className={styles.note2}>
-          You can use this <a href="https://search.google.com/structured-data/testing-tool/u/0/" target="_blank">tool to test structured data</a> on your page. Disable this option only if your theme does not support product microdata, or if you use alternate way to generate microdata, for example by using <a href="https://github.com/thirtybees/jsonmodule" target="_blank">thirtybees json module</a>.
+          {__("You can use this")} <a href="https://search.google.com/structured-data/testing-tool/u/0/" target="_blank">{__("tool to test structured data")}</a> {__("on your page")}.
         </div>
       </div>
     );

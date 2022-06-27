@@ -55,13 +55,13 @@ class Navigation extends React.PureComponent<Props> {
           </Tooltip>
         );
       } else {
-        ret.push(
-          <Tooltip key='importexport' title={__('Import and export reviews')}>
-            <IconButton onClick={() => goTo(reviewsPage('data'))}>
-              <ImportExportIcon />
-            </IconButton>
-          </Tooltip>
-        );
+        // ret.push(
+        //   <Tooltip key='importexport' title={__('Import and export reviews')}>
+        //     <IconButton onClick={() => goTo(reviewsPage('data'))}>
+        //       <ImportExportIcon />
+        //     </IconButton>
+        //   </Tooltip>
+        // );
         ret.push(
           <Tooltip key='create' title={__('Create review')}>
             <Button fab mini color="accent" onClick={() => goTo(reviewsPage('create'))}>

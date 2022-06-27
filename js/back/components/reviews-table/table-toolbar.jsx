@@ -69,7 +69,7 @@ class EnahncedTableToolbar extends React.PureComponent<Props, State> {
   render() {
     const { title, total, classes } = this.props;
     const ret = [
-      <Toolbar key='toolbar' className={classes.root} >
+      <Toolbar key='toolbar' className={classes.root + ' toolbar-rtl'} >
         <div className={classes.title}>
           <Typography type="title">{ title } ({total})</Typography>
         </div>

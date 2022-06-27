@@ -199,7 +199,7 @@ class EditReviewForm extends React.PureComponent<Props, State> {
         __html: settings.gdpr.text || __('By submitting this review you agree to use of your data as outlined in our privacy policy')
       };
       return (
-        <FormControlLabel
+        <FormControlLabel className="content-label"
           control={
             <Checkbox
               checked={agreed}

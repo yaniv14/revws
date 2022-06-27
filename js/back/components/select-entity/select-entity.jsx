@@ -63,7 +63,7 @@ class SelectEntity extends React.PureComponent<Props, State> {
     const { entities, entityName } = this.props;
     const hasEntities = !!entities;
     return (
-      <div>
+      <div className="fix-label">
         <TextField
           label={__("Search %s", entityName)}
           placeholder={__("Search %s", entityName)}

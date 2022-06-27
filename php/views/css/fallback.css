@@ -115,7 +115,6 @@ a .revws-grading {
 .revws-under-review {
   color: red;
   font-size: 12px;
-  margin-top: -10px;
 }
 
 .revws-review {
@@ -463,6 +462,10 @@ a .revws-grading {
   text-align: right;
 }
 
+.revws-reset [class^="MuiTabIndicator-root"] {
+  display: none !important;
+}
+
 .revws-dialog {
   display: flex;
   flex-direction: column;
@@ -587,4 +590,11 @@ a .revws-grading {
 .revws-review-form-consent * {
   margin: 0;
   padding: 0;
+}
+
+.revws-review-form .revws-review-form-input label {
+  transform: translate(0) scale(0.75) !important;
+  transform-origin: top right !important;
+  left: unset !important;
+  right: 0 !important;
 }

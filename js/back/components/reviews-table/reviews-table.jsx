@@ -172,7 +172,7 @@ class EnhancedTable extends React.Component<Props> {
           entityTypes={entityTypes}
           onChangeFilters={onChangeFilters} />
         <div className={classes.tableWrapper}>
-          <Table className={classes.table}>
+          <Table className={classes.table + ' table-rtl'}>
             <EnhancedTableHead
               columns={columnsData}
               order={order}

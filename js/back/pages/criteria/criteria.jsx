@@ -26,7 +26,7 @@ class CriteriaPage extends React.PureComponent<Props> {
   render(): Element<"div"> {
     const { criteria, ...rest  } = this.props;
     return (
-      <div>
+      <div className="criteria-div">
         <Section id='products' label={__('Products criteria')}>
           <CriteriaSection
             entityType='product'

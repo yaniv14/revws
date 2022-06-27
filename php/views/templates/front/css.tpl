@@ -130,7 +130,6 @@ a .revws-grading {
 .revws-under-review {
   color: red;
   font-size: 12px;
-  margin-top: -10px;
 }
 
 .revws-review {
@@ -635,6 +634,13 @@ a .revws-grading {
   color: #222;
 }
 
+.revws-review-form .revws-review-form-input label {
+  transform: translate(0) scale(0.75) !important;
+  transform-origin: top right !important;
+  left: unset !important;
+  right: 0 !important;
+}
+
 .revws-images {
   display: flex;
   flex-direction: row;
@@ -690,4 +696,62 @@ a .revws-grading {
   color: #999;
   font-style: italic;
   font-size: 85%;
+}
+
+.revws-reset [class^="MuiTabIndicator-root"] {
+  display: none !important;
+}
+
+.ym-table [class^="MuiPaper-"] [class^="MuiToolbar-"] {
+  padding-inline-start: 24px;
+  padding-inline-end: 2px;
+}
+
+.toolbar-rtl {
+  padding-left: 2px !important;
+  padding-right: 24px !important;
+}
+
+.table-rtl thead tr th {
+  text-align: right !important;
+}
+
+
+.table-rtl tbody tr td {
+  text-align: right !important;
+}
+
+.revws-reset div[class^="MuiTabIndicator-root"] {
+  display: none;
+}
+
+.table-rtl tbody tr td div[class^="EnhancedTable-customer"] svg {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.revws-reset .bootstrap {
+  padding: 15px;
+}
+
+.mr-10 {
+  margin-right: 10px;
+  margin-left: 0 !important;
+}
+
+.verified-buyer-admin {
+  margin-right: -14px !important;
+  margin-left: 16px !important;
+}
+
+
+.fix-label label {
+  right: 0;
+  left: unset !important;
+  transform-origin: top right !important;
+}
+
+.content-label {
+  margin-right: -14px !important;
+  margin-left: 16px !important;
 }

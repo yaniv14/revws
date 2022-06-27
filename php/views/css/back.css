@@ -30,3 +30,47 @@
   padding-inline-start: 24px;
   padding-inline-end: 2px;
 }
+
+.toolbar-rtl {
+  padding-left: 2px !important;
+  padding-right: 24px !important;
+}
+
+.table-rtl thead tr th {
+  text-align: right !important;
+}
+
+
+.table-rtl tbody tr td {
+  text-align: right !important;
+}
+
+.revws-reset div[class^="MuiTabIndicator-root"] {
+  display: none;
+}
+
+.table-rtl tbody tr td div[class^="EnhancedTable-customer"] svg {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.revws-reset .bootstrap {
+  padding: 15px;
+}
+
+.mr-10 {
+  margin-right: 10px;
+  margin-left: 0 !important;
+}
+
+.verified-buyer-admin {
+  margin-right: -14px !important;
+  margin-left: 16px !important;
+}
+
+
+.fix-label label {
+  right: 0;
+  left: unset !important;
+  transform-origin: top right !important;
+}

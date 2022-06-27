@@ -100,7 +100,7 @@ class EditReviewDialog extends React.PureComponent<Props, State> {
       }
       actions.push(
         <Button key="delete" onClick={this.deleteReview}>
-          {review.underReview ? 'Reject' : 'Delete'}
+          {review.underReview ? __('Reject') : __('Delete')}
         </Button>
       );
     }
