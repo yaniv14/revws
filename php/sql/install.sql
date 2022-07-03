@@ -92,5 +92,18 @@ CREATE TABLE IF NOT EXISTS `PREFIX_revws_review_image` (
   KEY `id_review` (`id_review`)
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=CHARSET_TYPE COLLATE=COLLATE_TYPE;;
 
+CREATE TABLE IF NOT EXISTS `PREFIX_revws_review_email` (
+  `id_email`      INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_product`    INT(11) UNSIGNED NOT NULL,
+  `id_customer`   INT(11) UNSIGNED NOT NULL,
+  `token`         VARCHAR(256) NOT NULL,
+  `sent`          TINYINT(1) NOT NULL DEFAULT 0,
+  `reviewed`      TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at`    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `send_date`     DATETIME NOT NULL,
+  PRIMARY KEY (`id_email`),
+  KEY `id_email` (`id_email`)
+) ENGINE=ENGINE_TYPE DEFAULT CHARSET=CHARSET_TYPE COLLATE=COLLATE_TYPE;;
+
 INSERT IGNORE INTO `PREFIX_revws_criterion`(`id_criterion`, `global`, `entity_type`) VALUES (1, 1, 'product');
 INSERT IGNORE INTO `PREFIX_revws_criterion_lang`(`id_criterion`, `id_lang`, `label`) SELECT 1, `l`.`id_lang`, 'Quality' FROM `PREFIX_lang` `l`;

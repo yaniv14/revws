@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
       xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-  <title>אנא כתוב ביקורת על קנייתך ב{shop_name}</title>
+  <title>{shop_name}</title>
   <!--[if !mso]>-->
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <!--<![endif]-->
@@ -162,7 +162,7 @@
                     <tbody>
                     <tr>
                       <td style="width:250px">
-                        <img alt="ברז"
+                        <img alt="{shop_name}"
                              height="auto"
                              src="{shop_logo}"
                              style="border:none;border-radius:0;display:block;font-size:13px;outline:0;text-decoration:none;width:100%;height:auto"
@@ -211,7 +211,7 @@
                 <td style="word-wrap:break-word;font-size:0;padding:0" align="center">
                   <div
                       style="cursor:auto;color:#616161;font-family:Roboto,Helvetica,sans-serif;font-size:18px;font-weight:500;line-height:24px;text-align:center">
-                    אנא כתוב ביקורת על קנייתך ב{shop_name}
+                    שגיאה בשליחת מייל ביקורת ב{shop_name}
                   </div>
                 </td>
               </tr>
@@ -265,14 +265,9 @@
               <tbody>
               <tr>
                 <td style="word-wrap:break-word;font-size:0;padding:10px 25px" align="right">
-                  <div
-                      style="cursor:auto;color:#616161;font-family:Roboto,Helvetica,sans-serif;font-size:16px;font-weight:300;line-height:24px;text-align:right">
-                    <p style="margin-bottom: 0;">שלום {buyer_name},</p>
-                    <p style="margin-bottom: 0;">לאחרונה קנית <a
-                        style="font-weight:700;color:#616161;text-decoration:none"
-                        href="{product_url}">{product_name}</a>, נשמח אם תשתפ/י את דעתך על המוצר
-                      והשירות כדי שלבאים אחריך יהיה יותר קל להחליט.</p>
-                  </div>
+                  <p>Email ID: {email_id}</p>
+                  <p>Email: {email}</p>
+                  <p>Customer ID: {customer_id}</p>
                 </td>
               </tr>
               </tbody>
@@ -329,98 +324,6 @@
           <!--[if mso | IE]>
           </td></tr></table>
           <![endif]-->
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <!--[if mso | IE]>
-  </td></tr></table>
-  <![endif]-->
-  <!--[if mso | IE]>
-  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" align="center"
-         style="width:600px;">
-    <tr>
-      <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
-  <![endif]-->
-  <div style="margin:0 auto;max-width:600px">
-    <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0;width:100%" align="center"
-           border="0">
-      <tbody>
-      <tr>
-        <td style="text-align:center;vertical-align:top;direction:rtl;font-size:0;padding:0">
-          <div class="mj-column-per-75 outlook-group-fix"
-               style="vertical-align:top;display:inline-block;direction:rtl;font-size:13px;text-align:right;width:100%">
-            <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-              <tbody>
-              <tr>
-                <td style="word-wrap:break-word;font-size:0;padding:10px 25px" align="right">
-                  <div
-                      style="cursor:auto;color:#616161;font-family:Roboto,Helvetica,sans-serif;font-size:16px;font-weight:300;line-height:24px;text-align:right">
-                    <form action="{form_url}" method="get" accept-charset="UTF-8" target="_blank">
-                      <input type="hidden" name="token" value="{token}">
-                      <input type="hidden" name="product_id" value="{product_id}">
-                      <input type="hidden" name="customer_id" value="{customer_id}">
-                      <p style="margin-bottom:0;margin-top: 30px;">
-                        דירוג כללי (נסו לדרג באופן כללי את חווית הקניה, מהירות המשלוח וטיב המוצר)
-                      </p>
-                      <div>
-                        <span style="display:inline-block;margin-left:15px">
-                          <input name="score" type="radio" value="5" id="score_5">
-                          <label for="score_5">
-                            <span style="font-size:14px;letter-spacing:0.21em;">★★★★★</span>
-                          </label>
-                        </span>
-                        <span style="display:inline-block;margin-left:15px">
-                          <input name="score" type="radio" value="4" id="score_4">
-                          <label for="score_4">
-                            <span style="font-size:14px;letter-spacing:0.21em;">★★★★</span>
-                          </label>
-                        </span>
-                        <span style="display:inline-block;margin-left:15px">
-                          <input name="score" type="radio" value="3" id="score_3">
-                          <label for="score_3">
-                            <span style="font-size:14px;letter-spacing:0.21em;">★★★</span>
-                          </label>
-                        </span>
-                        <span style="display:inline-block;margin-left:15px">
-                          <input name="score" type="radio" value="2" id="score_2">
-                          <label for="score_2">
-                            <span style="font-size:14px;letter-spacing:0.21em;">★★</span>
-                          </label>
-                        </span>
-                        <span style="display:inline-block;">
-                          <input name="score" type="radio" value="1" id="score_1">
-                          <label for="score_1">
-                            <span style="font-size:14px;letter-spacing:0.21em;">★</span>
-                          </label>
-                        </span>
-                      </div>
-                      <div>
-                        <label style="display: block;">
-                          כותרת לביקורת
-                        </label>
-                        <input type="text" name="title" style="width: 100%;">
-                      </div>
-                      <div>
-                        <label style="display: block;">
-                          ביקורת *
-                        </label>
-                        <textarea name="review" style="width: 100%;" rows="3" cols="40"></textarea>
-                      </div>
-                      <div style="text-align: center">
-                        <input type="submit" value="שליחה" style="border: 1px solid;border-radius: 4px;text-align:center;padding:5px 15px;background-color:#34a3cd;color:#fff;">
-                      </div>
-                    </form>
-                  </div>
-                  <div style="margin: 30px 0;text-align: center;">
-                    אנחנו מאוד מעריכים את המשוב ומקווים לראות אותך שוב בקרוב.
-                  </div>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
         </td>
       </tr>
       </tbody>
