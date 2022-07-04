@@ -7,8 +7,8 @@ $keys         = getKeys($translations);
 
 foreach (glob("translations/*.json") as $file) {
     $lang       = str_replace('.json', '', basename($file));
-    $translated = mergeKeys($file, $keys);
     if ($lang !== 'en') {
+        $translated = mergeKeys($file, $keys);
         $cnt   = 0;
         $lines = [];
         foreach ($translations as $md5 => $t) {

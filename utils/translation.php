@@ -60,12 +60,12 @@ function findTranslations()
 {
     $ret = [];
     // 1. js translation
-    $frontKeys = json_decode(file_get_contents('build/front-translation-keys.json'), true, 512, JSON_THROW_ON_ERROR);
+    $frontKeys = json_decode(file_get_contents('build/front-translation-keys.json'), true);
     foreach ($frontKeys as $str) {
         $key = strtolower(md5(escape($str)));
         registerTranslation($ret, $key, $str, 'app-translation');
     }
-    $backKeys = json_decode(file_get_contents('build/back-translation-keys.json'), true, 512, JSON_THROW_ON_ERROR);
+    $backKeys = json_decode(file_get_contents('build/back-translation-keys.json'), true);
     foreach ($backKeys as $str) {
         $key = strtolower(md5(escape($str)));
         registerTranslation($ret, $key, $str, 'app-translation');
@@ -108,7 +108,8 @@ function getKeys($translations)
 
 function mergeKeys($file, $keys)
 {
-    $existing = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+//    $existing = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+    $existing = json_decode(file_get_contents($file), true);
     $sorted   = $keys;
     ksort($sorted);
     $allKeys    = [];

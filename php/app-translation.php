@@ -27,15 +27,17 @@ class AppTranslation {
   }
 
   public function getFrontTranslations() {
-    return $this->changed(array(
+    $res = $this->changed(array(
        // FRONT_TRANSLATIONS
     ));
+    return $res;
   }
 
   public function getBackTranslations() {
-    return $this->changed(array(
+    $res = $this->changed(array(
       // BACK_TRANSLATIONS
     ));
+    return $res;
   }
 
   private function l($str) {

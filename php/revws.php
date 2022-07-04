@@ -346,7 +346,7 @@ class Revws extends Module
         $tab->id_parent  = $this->getTabParent();
         $tab->name       = array();
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = 'Product reviews';
+            $tab->name[$lang['id_lang']] = $this->l('Product reviews');
         }
 
         return $tab->add();
