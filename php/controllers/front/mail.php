@@ -48,7 +48,7 @@ class RevwsMailModuleFrontController extends ModuleFrontController
             (new DbQuery())
                 ->select('`id_email`')
                 ->from('revws_review_email')
-                ->where('`token` = '.$token)
+                ->where('`token` = "'.$token.'"')
                 ->where('`reviewed` = 0')
                 ->where('`sent` = 1')
         );
@@ -64,7 +64,7 @@ class RevwsMailModuleFrontController extends ModuleFrontController
         $o           = new RevwsMail((int)$oId);
         $product_id  = (int)Tools::getValue('product_id');
         $customer_id = (int)Tools::getValue('customer_id');
-        if ($o->id_product !== $product_id && $o->id_customer !== $customer_id) {
+        if ((int)$o->id_product !== $product_id && (int)$o->id_customer !== $customer_id) {
             Tools::redirect('index.php?controller=404');
         }
         if ( ! $content) {

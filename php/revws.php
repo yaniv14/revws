@@ -960,11 +960,8 @@ class Revws extends Module
     public function hookActionOrderStatusUpdate($params)
     {
         $order_status   = $params['newOrderStatus'];
-        $id_order_state = $order_status->id_order_state;
-        if ( ! in_array(
-            $id_order_state,
-            [4, 21, 22, 23, 25, 26, 27, 29, 30, 33]
-        )) {
+        $id_order_state = $order_status->id;
+        if ( $id_order_state !== 28) {
             return;
         }
         $order_id    = (int)$params['id_order'];
@@ -972,8 +969,6 @@ class Revws extends Module
         $id_customer = (int)$order->id_customer;
         $products    = $order->getProducts();
         foreach ($products as $product) {
-            $item                = [];
-            $item['description'] = $product['product_name'];
             try {
                 $o              = new RevwsMail();
                 $o->id_product  = (int)$product['product_id'];
