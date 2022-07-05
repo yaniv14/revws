@@ -19,3 +19,11 @@
 <div>
   {l s='Thank you for your review' mod='revws'}
 </div>
+
+<script>
+  if (window.location.search.substring(1).length) {
+    if(window.history !== undefined && window.history.pushState !== undefined) {
+      window.history.pushState({}, document.title, window.location.pathname);
+    }
+  }
+</script>
