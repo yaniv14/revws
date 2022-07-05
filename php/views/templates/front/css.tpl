@@ -649,6 +649,7 @@ a .revws-grading {
 
 .revws-image {
   margin-bottom: 10px;
+  margin-inline-end: 10px;
   width: {$cssSettings.images.thumbnail.width}px;
   height: {$cssSettings.images.thumbnail.height}px;
   display: flex;
